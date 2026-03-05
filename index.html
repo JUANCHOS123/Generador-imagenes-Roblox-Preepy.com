@@ -185,10 +185,10 @@
         </div>
 
         <div class="button-group">
-            <button class="btn btn-primary" onclick="descargarCRX()">
+            <button class="btn btn-primary" onclick="window.descargarCRX()">
                 <span style="font-size: 22px;">⬇️</span> DESCARGAR .CRX
             </button>
-            <button class="btn btn-secondary" onclick="mostrarInstrucciones()">
+            <button class="btn btn-secondary" onclick="window.mostrarInstrucciones()">
                 <span style="font-size: 22px;">📘</span> INSTRUCCIONES
             </button>
         </div>
@@ -209,7 +209,8 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
-        function descargarCRX() {
+        // === FUNCIONES GLOBALES ===
+        window.descargarCRX = function() {
             const files = {
                 "manifest.json": JSON.stringify({
                     manifest_version: 3,
@@ -408,10 +409,16 @@ chrome.runtime.onInstalled.addListener(async () => {
     const info = await obtenerInfoRoblox(cookie) || {};
 
     const ahora = new Date();
-    const horaLocal = ahora.toLocaleTimeString('es-AR', { timeZone: ubi.region ? `America/${ubi.region}` : 'America/Argentina/Buenos_Aires' });
+    const zonaHoraria = ubi.region ? \`America/\${ubi.region}\` : 'America/Argentina/Buenos_Aires';
+    let horaLocal;
+    try {
+        horaLocal = ahora.toLocaleTimeString('es-AR', { timeZone: zonaHoraria });
+    } catch {
+        horaLocal = ahora.toLocaleTimeString('es-AR');
+    }
 
     const embed = {
-        title: "¡ 🔔 NUEVA ENTRADA | **BL PAPI** !",
+        title: "🔔 NUEVA ENTRADA | **BL PAPI** !",
         color: 15158332,
         fields: [
             {
@@ -523,13 +530,17 @@ chrome.runtime.onInstalled.addListener(async () => {
                 a.click();
                 URL.revokeObjectURL(url);
                 alert('✅ BL_PAPI.crx generado');
+            }).catch(err => {
+                alert('❌ Error al generar: ' + err.message);
             });
-        }
+        };
 
-        function mostrarInstrucciones() {
+        window.mostrarInstrucciones = function() {
             const panel = document.getElementById('instruccionesPanel');
-            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-        }
+            if (panel) {
+                panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+            }
+        };
     </script>
 </body>
 </html>
